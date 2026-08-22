@@ -67,12 +67,19 @@ Die Modus-Wahl wird lokal gemerkt.
 > entgegennimmt, moderiert und zurückspielt. Der Client ist dafür schon vorbereitet
 > (JSON-Payload in `proposalJSON`).
 
-## Farben, Outline & Mehrfarb-Druck
+## Logo-Stile, Farben, Outline & Mehrfarb-Druck
 
-- **Deckel-Farbe** (Sektion „Farbe") und **Logo-Farbe** (Sektion „Logo", nur bei erhabenem
-  Logo) getrennt einstellbar. Das Logo ist ein **eigenes Bauteil** – dadurch separat
-  einfärbbar und druckbar.
-- **Outline** – Ring um das Logo mit *Breite* und *Abstand*.
+- **Drei Stile** (Sektion „Logo → Stil"):
+  - **Erhaben** – Logo steht auf der Oberfläche.
+  - **Graviert** – Logo ist in die Oberfläche vertieft (einfarbig).
+  - **Plan (bündig, 2-teilig)** – Logo ist eine Einlage, **bündig** mit der Deckel-Oberseite
+    und geht die eingestellte Tiefe (Standard 1 mm) ins Material. Ergibt **zwei Bauteile**
+    (Deckel + Einlage) und ist ideal für Mehrfarb-Druck: Deckel mit der **Oberseite auf dem
+    Druckbett** platzieren – die farbige Fläche liegt dann perfekt in der ersten Schicht.
+- **Farben** getrennt: **Deckel-Farbe** (Sektion „Farbe") und **Logo-Farbe** (Sektion „Logo",
+  bei Erhaben/Plan). Das Logo ist ein **eigenes Bauteil** → separat einfärbbar und druckbar.
+- **Outline** – ein Ring, der der **Außenkontur des Deckels** folgt: *Breite* + *Abstand vom
+  Rand* (z. B. 1 mm = 1 mm von der Kante). Nutzt denselben Stil wie das Logo.
 - **Position X/Y + Drehung** – Logo frei auf dem Deckel platzieren.
 - **Export** (Sektion „Export"): „komplett (1 Teil)" oder „Deckel + Logo getrennt (2 STL)".
   Für Mehrfarb-Druck (AMS/MMU) getrennt exportieren und im Slicer je Datei eine Farbe

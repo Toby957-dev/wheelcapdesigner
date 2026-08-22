@@ -24,9 +24,9 @@ export const DEFAULTS = {
   logoMode: 'none',        // none | svg | text
   logoStyle: 'raised',     // raised | engraved
   logoSize: 30,
-  logoDepth: 0.8,
-  outlineWidth: 0,         // 0 = keine Outline
-  outlineGap: 1.5,
+  logoDepth: 1.0,          // bei „Plan" = Tiefe der bündigen Einlage (1 mm empfohlen)
+  outlineWidth: 0,         // 0 = keine Outline (Ring am Deckelrand)
+  outlineGap: 4,           // Abstand von der Außenkontur des Deckels
   logoRecessDepth: 0,
   logoRecessDiameter: 36,
   logoOffsetX: 0,
@@ -80,14 +80,15 @@ export const GROUPS = [
         ] },
       { key: 'logoText', label: 'Text', type: 'text', showIf: p => p.logoMode === 'text' },
       { key: 'logoStyle', label: 'Stil', type: 'select', showIf: p => p.logoMode !== 'none', options: [
-          { value: 'raised', label: 'Erhaben (einfärbbar)' },
+          { value: 'raised', label: 'Erhaben' },
           { value: 'engraved', label: 'Graviert' },
+          { value: 'flush', label: 'Plan (bündig, 2-teilig)' },
         ] },
-      { key: 'logoColor', label: 'Logo-Farbe', type: 'color', showIf: p => p.logoMode !== 'none' && p.logoStyle === 'raised' },
+      { key: 'logoColor', label: 'Logo-Farbe', type: 'color', showIf: p => p.logoMode !== 'none' && p.logoStyle !== 'engraved' },
       { key: 'logoSize', label: 'Größe', min: 5, max: 200, step: 0.5, unit: 'mm', showIf: p => p.logoMode !== 'none' },
-      { key: 'logoDepth', label: 'Höhe / Tiefe', min: 0.2, max: 4, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none' },
-      { key: 'outlineWidth', label: 'Outline-Breite', min: 0, max: 8, step: 0.2, unit: 'mm', showIf: p => p.logoMode !== 'none', hint: '0 = keine Outline' },
-      { key: 'outlineGap', label: 'Outline-Abstand', min: 0, max: 12, step: 0.2, unit: 'mm', showIf: p => p.logoMode !== 'none' && p.outlineWidth > 0 },
+      { key: 'logoDepth', label: 'Höhe / Tiefe', min: 0.4, max: 4, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none', hint: 'Plan: Einlage-Tiefe (1 mm empfohlen)' },
+      { key: 'outlineWidth', label: 'Outline-Breite', min: 0, max: 15, step: 0.2, unit: 'mm', showIf: p => p.logoMode !== 'none', hint: 'Ring am Deckelrand · 0 = aus' },
+      { key: 'outlineGap', label: 'Abstand vom Rand', min: 0, max: 40, step: 0.5, unit: 'mm', showIf: p => p.logoMode !== 'none' && p.outlineWidth > 0 },
       { key: 'logoOffsetX', label: 'Position X', min: -40, max: 40, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none' },
       { key: 'logoOffsetY', label: 'Position Y', min: -40, max: 40, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none' },
       { key: 'logoRotation', label: 'Drehung', min: 0, max: 360, step: 1, unit: '°', showIf: p => p.logoMode !== 'none' },

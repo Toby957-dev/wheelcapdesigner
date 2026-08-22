@@ -53,14 +53,14 @@ function buildGap(d, centerDeg) {
   return geo;
 }
 
-// Ring (Annulus) als Outline um das Logo – entlang +Z extrudiert, zentriert.
+// Ring (Annulus) entlang +Z extrudiert, zentriert.
 function buildRing(inner, outer, depth) {
   const s = new THREE.Shape();
   s.absarc(0, 0, outer, 0, Math.PI * 2, false);
   const hole = new THREE.Path();
   hole.absarc(0, 0, Math.max(0.1, inner), 0, Math.PI * 2, true);
   s.holes.push(hole);
-  return new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, curveSegments: 96 });
+  return new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, curveSegments: 128 });
 }
 
 function finalize(brushOrGeo) {
@@ -69,18 +69,31 @@ function finalize(brushOrGeo) {
   return g;
 }
 
-// Logo (+ optionale Outline) im lokalen Raum aufbauen: zentriert, entlang +Z extrudiert.
-function buildLogoLocal(p, logo) {
-  let lg = logo.geometry.clone();
-  const depth = Math.max(0.1, p.logoDepth);
-  if (p.outlineWidth > 0) {
-    lg.computeBoundingBox();
-    const bb = lg.boundingBox;
-    const r = 0.5 * Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y);
-    const ring = buildRing(r + p.outlineGap, r + p.outlineGap + p.outlineWidth, depth);
-    lg = mergeGeometries([lg, ring], false);
+// Zweitfarb-Element (Logo + optionale Rand-Outline) im lokalen Raum: liegend, y in [0, depth].
+function buildElement(p, d, logo) {
+  const depth = Math.max(0.4, p.logoDepth);
+  const parts = [];
+
+  if (logo && logo.geometry) {
+    const lg = logo.geometry.clone();
+    lg.rotateX(-Math.PI / 2);                                   // -> liegend, y in [0, depth]
+    lg.rotateY(THREE.MathUtils.degToRad(p.logoRotation));
+    lg.translate(p.logoOffsetX, 0, -p.logoOffsetY);
+    parts.push(lg);
   }
-  return lg;
+
+  if (p.outlineWidth > 0) {
+    const outer = Math.min(d.topR - p.outlineGap, d.topR - 0.5);
+    const inner = Math.max(1, outer - p.outlineWidth);
+    if (outer > inner) {
+      const rg = buildRing(inner, outer, depth);
+      rg.rotateX(-Math.PI / 2);                                  // liegend, zentriert am Deckel
+      parts.push(rg);
+    }
+  }
+
+  if (!parts.length) return null;
+  return { geo: parts.length > 1 ? mergeGeometries(parts, false) : parts[0], depth };
 }
 
 export function buildCap(p, logo) {
@@ -105,24 +118,34 @@ export function buildCap(p, logo) {
     result = evaluator.evaluate(result, rb, SUBTRACTION);
   }
 
-  // 4) Logo
+  // 4) Logo + Outline je nach Stil
   let logoGeo = null;
-  if (logo && logo.geometry) {
-    const surfaceY = d.H - (p.logoRecessDepth > 0 ? p.logoRecessDepth : 0);
-    const g = buildLogoLocal(p, logo);
-    g.rotateX(-Math.PI / 2);
-    g.rotateY(THREE.MathUtils.degToRad(p.logoRotation));
-    g.translate(p.logoOffsetX, 0, -p.logoOffsetY);
+  if (p.logoMode !== 'none') {
+    const el = buildElement(p, d, logo);
+    if (el) {
+      const surfaceY = d.H - (p.logoRecessDepth > 0 ? p.logoRecessDepth : 0);
+      const depth = el.depth;
 
-    if (p.logoStyle === 'engraved') {
-      // in den Deckel gravieren (kein separates Mesh)
-      g.translate(0, surfaceY + 0.1, 0);
-      const b = new Brush(g); b.updateMatrixWorld();
-      result = evaluator.evaluate(result, b, SUBTRACTION);
-    } else {
-      // erhaben: eigenes Mesh, leicht in die Oberfläche eintauchen für Verbund
-      g.translate(0, surfaceY - 0.1, 0);
-      logoGeo = g;
+      if (p.logoStyle === 'raised') {
+        const g = el.geo; g.translate(0, surfaceY - 0.1, 0);   // leicht eintauchen für Verbund
+        logoGeo = g;
+
+      } else if (p.logoStyle === 'engraved') {
+        const g = el.geo; g.translate(0, surfaceY - depth + 0.15, 0);
+        const b = new Brush(g); b.updateMatrixWorld();
+        result = evaluator.evaluate(result, b, SUBTRACTION);
+
+      } else { // flush / "Plan": bündige Einlage, geht `depth` mm ins Material
+        const inlay = el.geo; inlay.translate(0, surfaceY - depth, 0);   // Oberkante = Deckelfläche
+        // Tasche schneiden: Kopie, die oben über die Fläche hinausragt (sauberes Öffnen)
+        const cut = inlay.clone();
+        cut.translate(0, -(surfaceY - depth), 0);              // -> y in [0, depth]
+        cut.scale(1, (depth + 0.3) / depth, 1);               // -> y in [0, depth+0.3]
+        cut.translate(0, surfaceY - depth, 0);                // -> y in [surfaceY-depth, surfaceY+0.3]
+        const b = new Brush(cut); b.updateMatrixWorld();
+        result = evaluator.evaluate(result, b, SUBTRACTION);
+        logoGeo = inlay;
+      }
     }
   }
 
