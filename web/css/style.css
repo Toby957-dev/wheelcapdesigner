@@ -185,6 +185,12 @@ select.ctl, input.ctl[type=text] {
 select.ctl { appearance: none; cursor: pointer; }
 input.ctl[type=text]:focus, select.ctl:focus { outline: none; border-color: var(--accent); }
 
+.ctl-color { width: 100%; height: 36px; padding: 3px; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: 8px; cursor: pointer; }
+.ctl-color::-webkit-color-swatch-wrapper { padding: 0; }
+.ctl-color::-webkit-color-swatch { border: none; border-radius: 5px; }
+.ctl-color::-moz-color-swatch { border: none; border-radius: 5px; }
+.hexval { font-family: var(--font-mono, monospace); font-size: 11.5px; text-transform: uppercase; color: var(--muted); }
+
 .filebtn {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%; padding: 11px; border: 1px dashed var(--border-2); border-radius: 8px;

@@ -67,6 +67,29 @@ Die Modus-Wahl wird lokal gemerkt.
 > entgegennimmt, moderiert und zurückspielt. Der Client ist dafür schon vorbereitet
 > (JSON-Payload in `proposalJSON`).
 
+## Farben, Outline & Mehrfarb-Druck
+
+- **Deckel-Farbe** (Sektion „Farbe") und **Logo-Farbe** (Sektion „Logo", nur bei erhabenem
+  Logo) getrennt einstellbar. Das Logo ist ein **eigenes Bauteil** – dadurch separat
+  einfärbbar und druckbar.
+- **Outline** – Ring um das Logo mit *Breite* und *Abstand*.
+- **Position X/Y + Drehung** – Logo frei auf dem Deckel platzieren.
+- **Export** (Sektion „Export"): „komplett (1 Teil)" oder „Deckel + Logo getrennt (2 STL)".
+  Für Mehrfarb-Druck (AMS/MMU) getrennt exportieren und im Slicer je Datei eine Farbe
+  zuweisen. Hinweis: **STL speichert keine Farbe** – die Farben sind Vorschau + Bauteil-Trennung.
+
+## Logo-Bibliothek & Marken-Logos
+
+- Unter „Logo → Eigenes SVG" gibt es eine **Bibliothek** (mitgelieferte SVGs in `web/logos/`)
+  und den **eigenen Upload**. Eigene/lizenzierte SVGs einfach in `web/logos/` legen und in
+  `LOGO_LIBRARY` (in `js/app.js`) eintragen.
+- **⚠️ Marken-/Auto-Logos:** Herstellerlogos (VW, BMW, Audi …) sind geschützte Marken.
+  Sie **öffentlich** anzubieten (auf der gehosteten Seite) ist rechtlich riskant und kann
+  zu Abmahnungen/Takedowns führen. Sauber ist: **Nutzer lädt sein eigenes Logo hoch**
+  (Verantwortung liegt dann beim Nutzer), oder es werden nur Logos mit klarer Lizenz/
+  Freigabe eingebunden. Für den privaten Eigenbedarf ist das meist unkritisch – kritisch
+  ist die öffentliche Verbreitung. Deshalb liefert das Projekt nur neutrale Beispiel-Formen.
+
 ## Technik
 
 - **three.js** – 3D-Vorschau & STL-Export (`STLExporter`, binär, Z-up fürs Druckbett).

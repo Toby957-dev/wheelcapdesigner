@@ -17,11 +17,16 @@ export const DEFAULTS = {
   barbRamp: 2.0,
   gripThickness: 2.5,
   tolerance: 0.3,
+  // Farben (nur Vorschau / getrennte Bauteile – STL ist farblos)
+  capColor: '#d7dbe1',
+  logoColor: '#ff7a45',
   // Logo
   logoMode: 'none',        // none | svg | text
   logoStyle: 'raised',     // raised | engraved
   logoSize: 30,
   logoDepth: 0.8,
+  outlineWidth: 0,         // 0 = keine Outline
+  outlineGap: 1.5,
   logoRecessDepth: 0,
   logoRecessDiameter: 36,
   logoOffsetX: 0,
@@ -48,6 +53,12 @@ export const GROUPS = [
     ],
   },
   {
+    id: 'color', label: 'Farbe', icon: 'palette',
+    params: [
+      { key: 'capColor', label: 'Deckel-Farbe', type: 'color' },
+    ],
+  },
+  {
     id: 'clips', label: 'Schnappnasen', icon: 'clip',
     params: [
       { key: 'clipCount', label: 'Anzahl Clips', min: 2, max: 16, step: 1, unit: '' },
@@ -69,16 +80,19 @@ export const GROUPS = [
         ] },
       { key: 'logoText', label: 'Text', type: 'text', showIf: p => p.logoMode === 'text' },
       { key: 'logoStyle', label: 'Stil', type: 'select', showIf: p => p.logoMode !== 'none', options: [
-          { value: 'raised', label: 'Erhaben' },
+          { value: 'raised', label: 'Erhaben (einfärbbar)' },
           { value: 'engraved', label: 'Graviert' },
         ] },
+      { key: 'logoColor', label: 'Logo-Farbe', type: 'color', showIf: p => p.logoMode !== 'none' && p.logoStyle === 'raised' },
       { key: 'logoSize', label: 'Größe', min: 5, max: 200, step: 0.5, unit: 'mm', showIf: p => p.logoMode !== 'none' },
       { key: 'logoDepth', label: 'Höhe / Tiefe', min: 0.2, max: 4, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none' },
+      { key: 'outlineWidth', label: 'Outline-Breite', min: 0, max: 8, step: 0.2, unit: 'mm', showIf: p => p.logoMode !== 'none', hint: '0 = keine Outline' },
+      { key: 'outlineGap', label: 'Outline-Abstand', min: 0, max: 12, step: 0.2, unit: 'mm', showIf: p => p.logoMode !== 'none' && p.outlineWidth > 0 },
+      { key: 'logoOffsetX', label: 'Position X', min: -40, max: 40, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none' },
+      { key: 'logoOffsetY', label: 'Position Y', min: -40, max: 40, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none' },
+      { key: 'logoRotation', label: 'Drehung', min: 0, max: 360, step: 1, unit: '°', showIf: p => p.logoMode !== 'none' },
       { key: 'logoRecessDepth', label: 'Vertiefung', min: 0, max: 3, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none', hint: 'Eingelassener „Teller" unter dem Logo', expert: true },
       { key: 'logoRecessDiameter', label: 'Vertiefung-Ø', min: 5, max: 200, step: 0.5, unit: 'mm', showIf: p => p.logoMode !== 'none' && p.logoRecessDepth > 0, expert: true },
-      { key: 'logoOffsetX', label: 'Versatz X', min: -30, max: 30, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none', expert: true },
-      { key: 'logoOffsetY', label: 'Versatz Y', min: -30, max: 30, step: 0.1, unit: 'mm', showIf: p => p.logoMode !== 'none', expert: true },
-      { key: 'logoRotation', label: 'Drehung', min: 0, max: 360, step: 1, unit: '°', showIf: p => p.logoMode !== 'none', expert: true },
     ],
   },
 ];
