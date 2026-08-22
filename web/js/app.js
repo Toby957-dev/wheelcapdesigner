@@ -97,18 +97,33 @@ function makeControl(meta) {
     inp.addEventListener('input', () => { state[meta.key] = inp.value; onParamChange(false); });
     wrap.appendChild(inp); inputs[meta.key] = inp;
   } else if (meta.type === 'color') {
-    wrap.innerHTML = `<div class="row"><label>${meta.label}</label><span class="val hexval">${state[meta.key]}</span></div>`;
+    wrap.innerHTML = `<div class="row"><label>${meta.label}</label></div>`;
+    const cr = document.createElement('div'); cr.className = 'color-row';
     const inp = document.createElement('input'); inp.type = 'color'; inp.className = 'ctl-color'; inp.value = state[meta.key];
-    const hex = wrap.querySelector('.hexval');
-    inp.addEventListener('input', () => { state[meta.key] = inp.value; hex.textContent = inp.value; applyColors(); });
-    wrap.appendChild(inp); inputs[meta.key] = inp;
+    const hexInp = document.createElement('input'); hexInp.type = 'text'; hexInp.className = 'hex-input'; hexInp.value = state[meta.key]; hexInp.maxLength = 7; hexInp.spellcheck = false;
+    inp.addEventListener('input', () => { state[meta.key] = inp.value; hexInp.value = inp.value; applyColors(); });
+    hexInp.addEventListener('input', () => {
+      let v = hexInp.value.trim(); if (v && !v.startsWith('#')) v = '#' + v;
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) { state[meta.key] = v; inp.value = v; applyColors(); }
+    });
+    hexInp.addEventListener('blur', () => { hexInp.value = state[meta.key]; });
+    cr.append(inp, hexInp); wrap.appendChild(cr); inputs[meta.key] = inp;
   } else {
-    wrap.innerHTML = `<div class="row"><label>${meta.label}</label><span class="val"><span class="num">${fmt(state[meta.key], meta.step)}</span><span class="u">${meta.unit || ''}</span></span></div>`;
+    wrap.innerHTML = `<div class="row"><label>${meta.label}</label><span class="valedit"><input type="number" class="num-input" min="${meta.min}" max="${meta.max}" step="${meta.step}"><span class="u">${meta.unit || ''}</span></span></div>`;
+    const numInp = wrap.querySelector('.num-input'); numInp.value = fmt(state[meta.key], meta.step);
+    const rw = document.createElement('div'); rw.className = 'range-wrap';
     const inp = document.createElement('input');
     inp.type = 'range'; inp.min = meta.min; inp.max = meta.max; inp.step = meta.step; inp.value = state[meta.key];
-    const numEl = wrap.querySelector('.num');
-    inp.addEventListener('input', () => { state[meta.key] = parseFloat(inp.value); numEl.textContent = fmt(state[meta.key], meta.step); onParamChange(false); });
-    wrap.appendChild(inp); inputs[meta.key] = inp;
+    rw.appendChild(inp);
+    rw.insertAdjacentHTML('beforeend', `<span class="range-center" title="Mitte"></span>`);
+    inp.addEventListener('input', () => { state[meta.key] = parseFloat(inp.value); numInp.value = fmt(state[meta.key], meta.step); onParamChange(false); });
+    numInp.addEventListener('input', () => {
+      let v = parseFloat(numInp.value); if (isNaN(v)) return;
+      v = Math.min(meta.max, Math.max(meta.min, v));
+      state[meta.key] = v; inp.value = v; onParamChange(false);
+    });
+    numInp.addEventListener('blur', () => { numInp.value = fmt(state[meta.key], meta.step); });
+    wrap.appendChild(rw); inputs[meta.key] = inp;
   }
   if (meta.hint) wrap.insertAdjacentHTML('beforeend', `<div class="hint">${meta.hint}</div>`);
   return wrap;
@@ -300,8 +315,9 @@ function setMode(m) {
 function syncInputs() {
   for (const key in inputs) {
     const el = inputs[key]; el.value = state[key];
-    const num = controlEls[key] && controlEls[key].querySelector('.num');
-    if (num) num.textContent = fmt(state[key], findMeta(key).step);
+    const wrap = controlEls[key]; if (!wrap) continue;
+    const num = wrap.querySelector('.num-input'); if (num) num.value = fmt(state[key], findMeta(key).step);
+    const hx = wrap.querySelector('.hex-input'); if (hx) hx.value = state[key];
   }
 }
 function updateVisibility() {
