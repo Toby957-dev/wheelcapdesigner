@@ -1,4 +1,4 @@
-# Nabendeckel-Generator
+# WheelCapDesigner
 
 Parametrischer **Nabendeckel-/Hub-Cap-Generator** mit Schnappnasen (Clip-Fit) und Logo
 (eigenes SVG oder Text). Zwei Wege:
@@ -16,10 +16,11 @@ Browser-Generator (wie BumpMesh, eigenes Design): Maße per Regler/Zahleneingabe
 Logo hochladen, Farben wählen, live in 3D drehen und als **STL herunterladen**.
 Kein Build-Tooling – Three.js kommt als ES-Modul vom CDN.
 
-**Features:** Standard-/Experten-Modus · Marken-Bibliothek (Auto- & Felgenhersteller) ·
-eigene Vorlagen speichern & vorschlagen · Logo als SVG/Text · Stile *Erhaben / Graviert /
-Plan (bündig, 2-teilig)* · Outline am Rand · getrennte Farben für Deckel & Logo ·
-Mehrfarb-Export (2 STL).
+**Features:** Hell-/Dunkel-Modus · Standard-/Experten-Modus · Marken-Bibliothek (Auto- &
+Felgenhersteller) · eigene Vorlagen speichern & vorschlagen · Logo als SVG/Text · Stile
+*Erhaben / Graviert / Plan (bündig, 2-teilig)* · Outline am Rand · getrennte Farben für
+Deckel & Logo (mit Hex-Eingabe) · Zahleneingabe an den Reglern · Export als **STL** und
+**3MF** (eine Datei, beide Teile + Farben – ideal für Bambu Studio).
 
 **Lokal starten** (im Ordner `web/`):
 ```bash

@@ -101,6 +101,26 @@ select.preset:hover { border-color: var(--faint); }
 .mode-toggle button:hover { color: var(--text); }
 .mode-toggle button.active { background: var(--accent); color: #1a0d06; }
 
+/* Theme-Umschalter */
+.icon-btn { width: 38px; height: 38px; display: grid; place-items: center; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: var(--radius); color: var(--text); cursor: pointer; transition: border-color .15s; }
+.icon-btn:hover { border-color: var(--faint); }
+.icon-btn svg { width: 18px; height: 18px; }
+.ico-sun { display: none; }
+
+/* Helles Theme */
+body.theme-light {
+  --bg: #eef1f5; --bg-2: #ffffff; --panel: #ffffff; --panel-2: #f2f4f7;
+  --border: #e4e8ee; --border-2: #d4dae1; --text: #1a1e24; --muted: #5b636e; --faint: #98a0ac;
+  --shadow: 0 8px 30px rgba(20, 30, 50, 0.12);
+}
+body.theme-light .topbar { background: linear-gradient(180deg, #ffffff, #f3f6f9); }
+body.theme-light .stage { background: radial-gradient(circle at 50% 40%, #ffffff, #e6ebf1 75%); }
+body.theme-light .sidebar::-webkit-scrollbar-thumb { background: #d4dae1; border-color: var(--bg-2); }
+body.theme-light .badge, body.theme-light .status { background: rgba(255, 255, 255, 0.9); border-color: var(--border); }
+body.theme-light .hintbar { background: rgba(255, 255, 255, 0.75); }
+body.theme-light .ico-sun { display: block; }
+body.theme-light .ico-moon { display: none; }
+
 /* Vorlagen-Sektion */
 .sub-label { font-size: 11px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
 .divider { height: 1px; background: var(--border); margin: 16px 0 14px; }

@@ -1,7 +1,7 @@
-# Nabendeckel-Generator · Web-App
+# WheelCapDesigner · Web-App
 
 Browser-basierter Konfigurator (wie BumpMesh, aber eigenes Design): Maße per Regler
-einstellen, Logo hochladen, live in 3D drehen und als **STL herunterladen**.
+einstellen, Logo hochladen, live in 3D drehen und als **STL / 3MF herunterladen**.
 **Kein Build-Tooling nötig** – reine HTML/JS-Datei, Three.js kommt als ES-Module vom CDN.
 
 ## Lokal starten
@@ -81,9 +81,17 @@ Die Modus-Wahl wird lokal gemerkt.
 - **Outline** – ein Ring, der der **Außenkontur des Deckels** folgt: *Breite* + *Abstand vom
   Rand* (z. B. 1 mm = 1 mm von der Kante). Nutzt denselben Stil wie das Logo.
 - **Position X/Y + Drehung** – Logo frei auf dem Deckel platzieren.
-- **Export** (Sektion „Export"): „komplett (1 Teil)" oder „Deckel + Logo getrennt (2 STL)".
-  Für Mehrfarb-Druck (AMS/MMU) getrennt exportieren und im Slicer je Datei eine Farbe
-  zuweisen. Hinweis: **STL speichert keine Farbe** – die Farben sind Vorschau + Bauteil-Trennung.
+- **Hell-/Dunkel-Modus** – Umschalter (Sonne/Mond) oben rechts, wird lokal gemerkt.
+- **Export** (Sektion „Export" oder Button oben):
+  - **STL** – eine Datei, beide Teile korrekt zueinander positioniert (farblos; Bambu Studio
+    kann die getrennten Shells als eigene Objekte laden).
+  - **3MF** – eine Datei mit **beiden Teilen + Farben** (basematerials). Bambu Studio erkennt
+    Deckel + Logo als getrennte, bereits eingefärbte Objekte – der bequemste Weg für Mehrfarb-Druck.
+
+> **STEP?** Ein echtes STEP (CAD-B-Rep) lässt sich aus diesem mesh-basierten Generator nicht
+> sinnvoll clientseitig erzeugen und bringt fürs Drucken keinen Vorteil (Slicer tessellieren
+> ohnehin; die Meshes sind bereits hochaufgelöst). Für Bambu Studio ist **3MF** die bessere
+> Einzeldatei. Echtes STEP bräuchte einen CAD-Kernel (OpenCascade) – separates Projekt.
 
 ## Logo-Bibliothek & Marken-Logos
 

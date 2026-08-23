@@ -9,6 +9,7 @@ import { loadUserPresets, saveUserPreset, deleteUserPreset, proposalJSON } from 
 import { supabaseEnabled, fetchCommunityGroup, submitProposal } from './supabase.js';
 import { buildCap, derive } from './geometry.js';
 import { svgToGeometry, textToGeometry } from './logo.js';
+import { export3MF } from './threemf.js';
 
 const SUBMIT_EMAIL = 'vorlagen@example.com';
 
@@ -38,13 +39,15 @@ let refreshBrands = () => {};
 // ============ 3D ============
 const canvas = document.getElementById('viewport');
 const stage = canvas.parentElement;
-let renderer, scene, camera, controls, capMesh, logoMesh, capMaterial, logoMaterial;
+let renderer, scene, camera, controls, capMesh, logoMesh, capMaterial, logoMaterial, grid;
+let theme = localStorage.getItem('nd_theme') || 'dark';
 const exporter = new STLExporter();
 
 function initThree() {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setSize(stage.clientWidth, stage.clientHeight, false);
+  renderer.setClearColor(0x000000, 0);   // transparent -> gethemter CSS-Hintergrund scheint durch
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
 
@@ -62,14 +65,22 @@ function initThree() {
   const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(50, 80, 60); scene.add(key);
   const fill = new THREE.DirectionalLight(0xbcd0ff, 0.7); fill.position.set(-60, 30, -40); scene.add(fill);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x20242c, 0.5));
-  const grid = new THREE.GridHelper(400, 40, 0x2a2f38, 0x1c2027); grid.position.y = -0.01; scene.add(grid);
 
   capMaterial = new THREE.MeshStandardMaterial({ color: state.capColor, roughness: 0.52, metalness: 0.02 });
   logoMaterial = new THREE.MeshStandardMaterial({ color: state.logoColor, roughness: 0.45, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: -1 });
 
+  applyTheme(theme);
   addEventListener('resize', onResize);
   new ResizeObserver(onResize).observe(stage);
   animate();
+}
+
+function applyTheme(t) {
+  theme = t; localStorage.setItem('nd_theme', t);
+  document.body.classList.toggle('theme-light', t === 'light');
+  if (grid) { scene.remove(grid); grid.geometry.dispose(); grid.material.dispose(); }
+  const c = t === 'light' ? [0xcfd6df, 0xe2e7ed] : [0x2a2f38, 0x1c2027];
+  grid = new THREE.GridHelper(400, 40, c[0], c[1]); grid.position.y = -0.01; scene.add(grid);
 }
 
 function onResize() {
@@ -288,7 +299,8 @@ function buildUI() {
 
   const mt = document.getElementById('modeToggle');
   mt.querySelectorAll('button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
-  document.getElementById('download').addEventListener('click', () => downloadSTL(false));
+  document.getElementById('themeToggle').addEventListener('click', () => applyTheme(theme === 'light' ? 'dark' : 'light'));
+  document.getElementById('download').addEventListener('click', downloadSTL);
   setMode(mode);
 }
 
@@ -296,12 +308,12 @@ function buildExportSection(root) {
   const sec = document.createElement('div'); sec.className = 'section';
   sec.innerHTML = `<div class="section-head"><span class="ico">${ICONS.palette}</span><h2>Export</h2><span class="chev"></span></div>`;
   const body = document.createElement('div'); body.className = 'section-body';
-  const b1 = document.createElement('button'); b1.className = 'btn btn-ghost btn-block'; b1.textContent = 'STL komplett (1 Teil)';
-  b1.addEventListener('click', () => downloadSTL(false));
-  const b2 = document.createElement('button'); b2.className = 'btn btn-ghost btn-block'; b2.style.marginTop = '8px'; b2.textContent = 'Deckel + Logo getrennt (2 STL)';
-  b2.addEventListener('click', () => downloadSTL(true));
+  const b1 = document.createElement('button'); b1.className = 'btn btn-ghost btn-block'; b1.textContent = 'STL herunterladen';
+  b1.addEventListener('click', downloadSTL);
+  const b2 = document.createElement('button'); b2.className = 'btn btn-ghost btn-block'; b2.style.marginTop = '8px'; b2.textContent = '3MF · mit Farben (Bambu Studio)';
+  b2.addEventListener('click', download3MF);
   body.append(b1, b2);
-  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">Für Mehrfarb-Druck (z. B. AMS): getrennt exportieren und im Slicer je Farbe zuweisen. STL selbst ist farblos.</div>`);
+  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">Eine Datei, beide Teile korrekt positioniert. <b>3MF</b> enthält die Farben – Bambu Studio erkennt Deckel + Logo als getrennte Objekte. STL ist farblos (Teile lassen sich im Slicer trennen).</div>`);
   sec.appendChild(body);
   sec.querySelector('.section-head').addEventListener('click', () => sec.classList.toggle('collapsed'));
   root.appendChild(sec);
@@ -420,19 +432,21 @@ function forExport(geo) {
   out.setAttribute('position', g.getAttribute('position').clone());
   return out;
 }
-function downloadSTL(separate) {
+function baseName() { return `wheelcap_${state.outerDiameter}x${state.mountDiameter}mm`; }
+
+function downloadSTL() {
   if (!capMesh) return;
-  const base = `nabendeckel_${state.outerDiameter}x${state.mountDiameter}mm`;
-  const hasLogo = logoMesh && logoMesh.visible;
-  if (separate && hasLogo) {
-    download(stlBlob(capMesh.geometry), base + '_deckel.stl');
-    download(stlBlob(logoMesh.geometry), base + '_logo.stl');
-  } else {
-    const geos = [forExport(capMesh.geometry)];
-    if (hasLogo) geos.push(forExport(logoMesh.geometry));
-    const merged = geos.length > 1 ? mergeGeometries(geos, false) : geos[0];
-    download(stlBlob(merged), base + '.stl');
-  }
+  const geos = [forExport(capMesh.geometry)];
+  if (logoMesh && logoMesh.visible) geos.push(forExport(logoMesh.geometry));
+  const merged = geos.length > 1 ? mergeGeometries(geos, false) : geos[0];
+  download(stlBlob(merged), baseName() + '.stl');
+}
+
+function download3MF() {
+  if (!capMesh) return;
+  const parts = [{ geometry: capMesh.geometry, color: state.capColor, name: 'Deckel' }];
+  if (logoMesh && logoMesh.visible) parts.push({ geometry: logoMesh.geometry, color: state.logoColor, name: 'Logo' });
+  download(export3MF(parts), baseName() + '.3mf');
 }
 
 // ============ Start ============
