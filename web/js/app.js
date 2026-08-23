@@ -427,6 +427,36 @@ function download(blob, name) {
   const url = URL.createObjectURL(blob); const a = document.createElement('a');
   a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
 }
+
+// ---- Ko-fi ----
+const KOFI = { id: 'O8C525LFQ2', color: '#72a4f2', text: 'Kaffee spendieren' };
+let kofiHTML = null;
+function initKofi() {
+  const s = document.createElement('script');
+  s.src = 'https://storage.ko-fi.com/cdn/widget/Widget_2.js';
+  s.onload = () => {
+    try {
+      window.kofiwidget2.init(KOFI.text, KOFI.color, KOFI.id);
+      kofiHTML = window.kofiwidget2.getHTML();
+      const top = document.getElementById('kofiTop'); if (top) top.innerHTML = kofiHTML;
+    } catch (e) { console.warn('Ko-fi:', e); }
+  };
+  document.head.appendChild(s);
+}
+function setupDownloadPopup() {
+  const modal = document.getElementById('dlModal');
+  const hide = () => modal.classList.remove('show');
+  document.getElementById('dlClose').addEventListener('click', hide);
+  document.getElementById('dlContinue').addEventListener('click', hide);
+  modal.addEventListener('click', (e) => { if (e.target === modal) hide(); });
+}
+function showDownloadPopup() {
+  if (sessionStorage.getItem('nd_kofi_shown')) return;   // pro Sitzung nur einmal
+  sessionStorage.setItem('nd_kofi_shown', '1');
+  const pop = document.getElementById('kofiPopup');
+  if (pop && kofiHTML && !pop.innerHTML) pop.innerHTML = kofiHTML;
+  document.getElementById('dlModal').classList.add('show');
+}
 // Nur Position behalten, damit sich Deckel- und Logo-Geometrie verschmelzen lassen.
 function forExport(geo) {
   const g = geo.index ? geo.toNonIndexed() : geo.clone();
@@ -442,6 +472,7 @@ function downloadSTL() {
   if (logoMesh && logoMesh.visible) geos.push(forExport(logoMesh.geometry));
   const merged = geos.length > 1 ? mergeGeometries(geos, false) : geos[0];
   download(stlBlob(merged), baseName() + '.stl');
+  showDownloadPopup();
 }
 
 function download3MF() {
@@ -449,11 +480,13 @@ function download3MF() {
   const parts = [{ geometry: capMesh.geometry, color: state.capColor, name: 'Deckel' }];
   if (logoMesh && logoMesh.visible) parts.push({ geometry: logoMesh.geometry, color: state.logoColor, name: 'Logo' });
   download(export3MF(parts), baseName() + '.3mf');
+  showDownloadPopup();
 }
 
 // ============ Start ============
 try {
   initThree(); buildUI(); rebuild();
+  setupDownloadPopup(); initKofi();
   if (supabaseEnabled()) {
     fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); } });
   }

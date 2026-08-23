@@ -88,10 +88,35 @@ select.preset:hover { border-color: var(--faint); }
 .btn-primary svg { width: 16px; height: 16px; }
 .btn-ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border-2); }
 .btn-ghost:hover { border-color: var(--faint); }
-.btn-kofi { background: #72a4f2; color: #10233f; text-decoration: none; }
-.btn-kofi:hover { filter: brightness(1.06); }
-.btn-kofi svg { width: 16px; height: 16px; }
-@media (max-width: 920px) { .kofi-txt { display: none; } }
+/* Ko-fi-Slot (offizielles Widget) */
+.kofi-slot { display: inline-flex; align-items: center; }
+.kofi-slot a { display: inline-flex !important; align-items: center; }
+.kofi-slot img { vertical-align: middle; }
+.kofi-slot-lg { justify-content: center; margin: 4px 0 18px; }
+
+/* Download-Popup */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100; display: none;
+  align-items: center; justify-content: center; padding: 20px;
+  background: rgba(6, 8, 12, 0.62); backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  position: relative; width: 100%; max-width: 380px; text-align: center;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+  padding: 28px 26px 22px; box-shadow: var(--shadow);
+}
+.modal-cup { font-size: 40px; line-height: 1; margin-bottom: 10px; }
+.modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+.modal p { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
+.modal .btn-ghost { width: 100%; justify-content: center; }
+.modal-close {
+  position: absolute; top: 12px; right: 12px; width: 30px; height: 30px;
+  border: none; background: var(--panel-2); color: var(--muted); border-radius: 8px;
+  font-size: 18px; line-height: 1; cursor: pointer;
+}
+.modal-close:hover { color: var(--text); }
+@media (max-width: 920px) { #kofiTop { display: none; } }
 .btn-sm { padding: 8px 14px; font-size: 12.5px; }
 .btn-block { width: 100%; justify-content: center; }
 
