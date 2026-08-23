@@ -88,6 +88,10 @@ select.preset:hover { border-color: var(--faint); }
 .btn-primary svg { width: 16px; height: 16px; }
 .btn-ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border-2); }
 .btn-ghost:hover { border-color: var(--faint); }
+.btn-kofi { background: #72a4f2; color: #10233f; text-decoration: none; }
+.btn-kofi:hover { filter: brightness(1.06); }
+.btn-kofi svg { width: 16px; height: 16px; }
+@media (max-width: 920px) { .kofi-txt { display: none; } }
 .btn-sm { padding: 8px 14px; font-size: 12.5px; }
 .btn-block { width: 100%; justify-content: center; }
 

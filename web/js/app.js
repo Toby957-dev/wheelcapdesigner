@@ -62,9 +62,11 @@ function initThree() {
   controls.enableDamping = true; controls.dampingFactor = 0.08;
   controls.target.set(0, 5, 0); controls.minDistance = 20; controls.maxDistance = 600;
 
-  const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(50, 80, 60); scene.add(key);
-  const fill = new THREE.DirectionalLight(0xbcd0ff, 0.7); fill.position.set(-60, 30, -40); scene.add(fill);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x20242c, 0.5));
+  const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(50, 80, 60); scene.add(key);
+  const fill = new THREE.DirectionalLight(0xbcd0ff, 0.6); fill.position.set(-60, 30, -40); scene.add(fill);
+  const under = new THREE.DirectionalLight(0xffffff, 0.9); under.position.set(15, -60, 25); scene.add(under); // beleuchtet die Unterseite
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa2b0, 0.55)); // hellerer „Boden" -> Unterseite nicht mehr schwarz
+  scene.add(new THREE.AmbientLight(0xffffff, 0.22));
 
   capMaterial = new THREE.MeshStandardMaterial({ color: state.capColor, roughness: 0.52, metalness: 0.02 });
   logoMaterial = new THREE.MeshStandardMaterial({ color: state.logoColor, roughness: 0.45, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: -1 });
