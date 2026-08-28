@@ -2,8 +2,8 @@
 // Der Anon-Key ist bewusst öffentlich (durch Row-Level-Security abgesichert).
 // Nach dem Anlegen des Supabase-Projekts hier URL + Anon-Key eintragen:
 
-export const SUPABASE_URL = '';        // z. B. 'https://xxxx.supabase.co'
-export const SUPABASE_ANON_KEY = '';   // der "anon public" Key aus den Projekt-Settings
+export const SUPABASE_URL = 'https://wndpyolpisazwbivvukw.supabase.co';
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InduZHB5b2xwaXNhendiaXZ2dWt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MzI0MjUsImV4cCI6MjEwMzUwODQyNX0.N6KFKVF07ZCSnV6noxGSoJFnAiQPnWyDRWXPhKesn2Y';
 
 export function supabaseEnabled() {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
