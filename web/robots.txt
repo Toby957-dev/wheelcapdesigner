@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wheelcapdesigner-u4aa.vercel.app/sitemap.xml
