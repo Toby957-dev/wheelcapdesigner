@@ -33,10 +33,15 @@ Dann [http://localhost:8099](http://localhost:8099) öffnen. Details: [web/READM
 
 ---
 
-## OpenSCAD-Variante
+## OpenSCAD-Variante / MakerWorld
 
-[`nabendeckel_generator.scad`](nabendeckel_generator.scad) in OpenSCAD öffnen
-(**Window → Customizer**), Maße einstellen, mit **F6** rendern, **STL exportieren**.
+Das Bundle liegt in [`makerworld/`](makerworld/) – fertig für MakerWorlds **Parametric
+Model Maker** (OpenSCAD 2021): [`wheelcapdesigner.scad`](makerworld/wheelcapdesigner.scad)
++ Logo-SVGs. Feature-Parität mit der Web-App: 3 Logo-Stile inkl. Plan (2-farbig), Outline,
+Farben/Multicolor, SVG-Logo-Bibliothek + Text.
+
+Upload-Anleitung und der fertige Listing-Text stehen in
+[`makerworld/README.md`](makerworld/README.md) bzw. [`makerworld/LISTING.md`](makerworld/LISTING.md).
 
 Die wichtigsten Maße: `outer_diameter` (Außen-Ø, muss > `mount_diameter` sein),
 `mount_diameter` (Radöffnung/Klemm-Ø), `total_height`, `grip_thickness` (Materialstärke
@@ -53,7 +58,7 @@ nabendeckel-generator/
 │  ├─ css/style.css
 │  ├─ js/                   config, brands, geometry, logo, app, supabase, userPresets
 │  └─ logos/                Beispiel-SVGs
-├─ nabendeckel_generator.scad   OpenSCAD-Variante
+├─ makerworld/             MakerWorld-Bundle (OpenSCAD .scad + Logo-SVGs + Listing-Text)
 ├─ supabase-schema.sql      DB-Schema für die gemeinsame Vorlagen-Bibliothek
 ├─ DEPLOY.md                Deployment-Anleitung
 └─ README.md
