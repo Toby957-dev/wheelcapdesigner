@@ -8,9 +8,9 @@
   --text: #e7eaee;
   --muted: #949ba6;
   --faint: #6b7280;
-  --accent: #ff7a45;
-  --accent-2: #ff9d6e;
-  --accent-soft: rgba(255, 122, 69, 0.14);
+  --accent: #0091ff;
+  --accent-2: #33a8ff;
+  --accent-soft: rgba(0, 145, 255, 0.14);
   --good: #46d19e;
   --danger: #ff5c5c;
   --radius: 10px;
@@ -45,12 +45,9 @@ body {
 }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand .mark {
-  width: 34px; height: 34px; border-radius: 9px;
-  background: radial-gradient(circle at 30% 30%, #ff9d6e, var(--accent));
-  display: grid; place-items: center;
-  box-shadow: 0 4px 14px rgba(255, 122, 69, 0.35);
+  width: 38px; height: 38px; display: grid; place-items: center; flex-shrink: 0;
 }
-.brand .mark svg { width: 20px; height: 20px; }
+.brand .mark img { width: 38px; height: 38px; display: block; }
 .brand h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
 .brand p { font-size: 11px; color: var(--muted); margin-top: -2px; }
 
@@ -83,7 +80,7 @@ select.preset:hover { border-color: var(--faint); }
   font-family: inherit;
 }
 .btn:active { transform: scale(.97); }
-.btn-primary { background: var(--accent); color: #1a0d06; }
+.btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { filter: brightness(1.08); }
 .btn-primary svg { width: 16px; height: 16px; }
 .btn-ghost { background: var(--panel-2); color: var(--text); border: 1px solid var(--border-2); }
@@ -128,7 +125,7 @@ select.preset:hover { border-color: var(--faint); }
   padding: 6px 14px; border-radius: 7px; transition: background .15s, color .15s;
 }
 .mode-toggle button:hover { color: var(--text); }
-.mode-toggle button.active { background: var(--accent); color: #1a0d06; }
+.mode-toggle button.active { background: var(--accent); color: #fff; }
 
 /* Theme-Umschalter */
 .icon-btn { width: 38px; height: 38px; display: grid; place-items: center; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: var(--radius); color: var(--text); cursor: pointer; transition: border-color .15s; }
