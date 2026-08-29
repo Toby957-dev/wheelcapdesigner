@@ -31,8 +31,10 @@ Klicke auf „Customize" und erstelle deinen passenden Nabendeckel:
 
 📏 Maße vorher am Rad nachmessen! Montage-Ø = Durchmesser der Radöffnung.
 
-🌐 Noch mehr: Auf unserer Web-App kannst du dein EIGENES Logo hochladen und als STL/3MF laden:
-   https://wheelcapdesigner-u4aa.vercel.app
+🖼️ Eigenes Bild-Logo? Hier im Customizer gibt es Formen + Text. Für ein individuelles Logo:
+   • In Bambu Studio dein SVG/Bild direkt auf den Deckel setzen (Rechtsklick → „SVG hinzufügen" / „Text"), oder
+   • unsere Web-App nutzen – freier SVG-Upload, Farben, STL/3MF-Export:
+     https://wheelcapdesigner-u4aa.vercel.app
 
 ☕ Gefällt dir das Projekt? Über einen Kaffee freue ich mich: https://ko-fi.com/O8C525LFQ2
 
@@ -56,8 +58,10 @@ Hit “Customize” to build a cap that fits your wheel:
 
 📏 Measure your wheel first! Mount Ø = diameter of the wheel opening.
 
-🌐 Upload your OWN logo & export STL/3MF on the web app:
-   https://wheelcapdesigner-u4aa.vercel.app
+🖼️ Custom picture logo? This customizer offers shapes + text. For a custom image logo:
+   • add your SVG/image directly onto the cap in Bambu Studio (right-click → “Add SVG” / “Text”), or
+   • use our web app – free SVG upload, colors, STL/3MF export:
+     https://wheelcapdesigner-u4aa.vercel.app
 
 Please use only your own or freely licensed logos – brand logos are trademarked.
 ```
