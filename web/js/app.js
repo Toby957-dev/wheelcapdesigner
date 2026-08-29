@@ -8,7 +8,7 @@ import { BRAND_LIBRARY, GENERIC } from './brands.js';
 import { loadUserPresets, saveUserPreset, deleteUserPreset, proposalJSON } from './userPresets.js';
 import { supabaseEnabled, fetchCommunityGroup, submitProposal } from './supabase.js';
 import { buildCap, derive } from './geometry.js';
-import { svgToGeometry, textToGeometry } from './logo.js';
+import { svgToGeometry, textToGeometry, shapeToGeometry } from './logo.js';
 import { export3MF } from './threemf.js';
 
 const SUBMIT_EMAIL = 'vorlagen@example.com';
@@ -375,7 +375,9 @@ async function rebuild() {
   await new Promise(r => setTimeout(r, 20));
   try {
     let logo = null;
-    if (state.logoMode === 'svg' && logoSvgText) {
+    if (state.logoMode === 'shape') {
+      logo = { geometry: shapeToGeometry(state.logoShape, state.logoDepth, state.logoSize) };
+    } else if (state.logoMode === 'svg' && logoSvgText) {
       try { logo = { geometry: svgToGeometry(logoSvgText, state.logoDepth, state.logoSize) }; }
       catch (e) { showWarn(e.message); }
     } else if (state.logoMode === 'text' && state.logoText.trim()) {

@@ -21,8 +21,9 @@ export const DEFAULTS = {
   capColor: '#d7dbe1',
   logoColor: '#ff7a45',
   // Logo
-  logoMode: 'none',        // none | svg | text
-  logoStyle: 'raised',     // raised | engraved
+  logoMode: 'none',        // none | shape | text | svg
+  logoShape: 'star',       // star | bolt | rings | hexagon | circle
+  logoStyle: 'raised',     // raised | engraved | flush
   logoSize: 30,
   logoDepth: 1.0,          // bei „Plan" = Tiefe der bündigen Einlage (1 mm empfohlen)
   outlineWidth: 0,         // 0 = keine Outline (Ring am Deckelrand)
@@ -75,8 +76,16 @@ export const GROUPS = [
     params: [
       { key: 'logoMode', label: 'Quelle', type: 'select', options: [
           { value: 'none', label: 'Kein Logo' },
-          { value: 'svg', label: 'Eigenes SVG' },
+          { value: 'shape', label: 'Form' },
           { value: 'text', label: 'Text' },
+          { value: 'svg', label: 'Eigenes SVG' },
+        ] },
+      { key: 'logoShape', label: 'Form', type: 'select', showIf: p => p.logoMode === 'shape', options: [
+          { value: 'star', label: 'Stern' },
+          { value: 'bolt', label: 'Blitz' },
+          { value: 'rings', label: 'Ringe' },
+          { value: 'hexagon', label: 'Sechseck' },
+          { value: 'circle', label: 'Kreis-Ring' },
         ] },
       { key: 'logoText', label: 'Text', type: 'text', showIf: p => p.logoMode === 'text' },
       { key: 'logoStyle', label: 'Stil', type: 'select', showIf: p => p.logoMode !== 'none', options: [

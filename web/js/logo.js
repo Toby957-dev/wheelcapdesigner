@@ -70,6 +70,45 @@ export function svgToGeometry(svgText, depth, targetSize) {
   return ensureOutward(fitAndCenter(geo, targetSize));
 }
 
+// ---- Generische Formen (prozedural, zentriert) ----
+function starShape(R, r) {
+  const s = new THREE.Shape();
+  for (let i = 0; i < 10; i++) {
+    const a = Math.PI / 2 + i * Math.PI / 5, rad = i % 2 === 0 ? R : r;
+    const x = rad * Math.cos(a), y = rad * Math.sin(a);
+    i === 0 ? s.moveTo(x, y) : s.lineTo(x, y);
+  }
+  s.closePath(); return s;
+}
+function polyShape(pts) {
+  const s = new THREE.Shape();
+  pts.forEach((p, i) => (i === 0 ? s.moveTo(p[0], p[1]) : s.lineTo(p[0], p[1])));
+  s.closePath(); return s;
+}
+function annulus(rOuter, rInner) {
+  const s = new THREE.Shape(); s.absarc(0, 0, rOuter, 0, Math.PI * 2, false);
+  const h = new THREE.Path(); h.absarc(0, 0, rInner, 0, Math.PI * 2, true); s.holes.push(h);
+  return s;
+}
+function disc(r) { const s = new THREE.Shape(); s.absarc(0, 0, r, 0, Math.PI * 2, false); return s; }
+
+export function shapeToGeometry(name, depth, size) {
+  const R = size / 2;
+  let shapes;
+  if (name === 'bolt') {
+    shapes = [polyShape([[8, 46], [-26, -6], [-2, -6], [-10, -46], [30, 10], [4, 10]].map(p => [(p[0] - 2) * size / 92, p[1] * size / 92]))];
+  } else if (name === 'rings') {
+    shapes = [annulus(R, R * 0.80), disc(R * 0.28)];
+  } else if (name === 'hexagon') {
+    shapes = [polyShape([...Array(6)].map((_, i) => { const a = Math.PI / 6 + i * Math.PI / 3; return [R * Math.cos(a), R * Math.sin(a)]; }))];
+  } else if (name === 'circle') {
+    shapes = [annulus(R, R * 0.60)];
+  } else { // star
+    shapes = [starShape(R, R * 0.42)];
+  }
+  return new THREE.ExtrudeGeometry(shapes, { depth: Math.max(0.1, depth), bevelEnabled: false, curveSegments: 64 });
+}
+
 // Text -> extrudierte Geometrie.
 export async function textToGeometry(text, depth, targetSize) {
   const font = await loadFont();
