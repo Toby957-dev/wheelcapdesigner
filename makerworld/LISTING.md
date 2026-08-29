@@ -7,7 +7,7 @@ WheelCapDesigner – Parametrischer Nabendeckel / Hub Cap (Custom Logo, 2-farbig
 
 ## Kurzbeschreibung / Summary
 ```
-Parametrischer Nabendeckel: Maße einstellen, Logo (Text/SVG) wählen, erhaben · graviert · plan (2-farbig) – passt auf fast jede Felge. Klick auf „Customize".
+Parametrischer Nabendeckel: Maße einstellen, Logo (Text/Form) wählen, erhaben · graviert · plan (2-farbig) – passt auf fast jede Felge. Klick auf „Customize".
 ```
 
 ## Beschreibung (Description) — kopierbar
@@ -18,7 +18,7 @@ Parametrischer Nabendeckel: Maße einstellen, Logo (Text/SVG) wählen, erhaben �
 Klicke auf „Customize" und erstelle deinen passenden Nabendeckel:
 • Außen-Ø, Montage-/Klemm-Ø, Höhe und Clip-Sitz frei einstellbar
 • Schnappnasen (Clip-Fit) – parametrisch, für sicheren Halt
-• Logo als Text oder aus der SVG-Bibliothek (Stern, Blitz, Ringe)
+• Logo als Text oder eingebaute Form (Stern, Blitz, Ringe, Sechseck, Kreis-Ring)
 • 3 Stile: Erhaben, Graviert, Plan (bündige 2-farbige Einlage)
 • Optionaler Zier-Ring (Outline) am Rand
 • Farben für Deckel & Logo → mehrfarbiger Druck (AMS)
@@ -47,7 +47,7 @@ Hinweis: Bitte nur eigene oder frei lizenzierte Logos verwenden – Markenlogos 
 Hit “Customize” to build a cap that fits your wheel:
 • Set outer Ø, mount/clip Ø, height and clip fit
 • Snap-fit clips (parametric) for a secure hold
-• Logo from text or the SVG library (star, bolt, rings)
+• Logo from text or a built-in shape (star, bolt, rings, hexagon, ring)
 • 3 styles: Raised, Engraved, Flush (2-color inlay)
 • Optional outline ring near the edge
 • Separate colors for cap & logo → multi-color printing (AMS)

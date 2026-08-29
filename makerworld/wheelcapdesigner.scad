@@ -42,15 +42,15 @@ tolerance = 0.3;          // [0:0.05:1.5]
 
 /* [Logo] */
 // Logo-Quelle
-logo_mode = "none";       // [none:Kein Logo, text:Text, svg:SVG-Bibliothek]
+logo_mode = "none";       // [none:Kein Logo, text:Text, shape:Form]
 // Stil: Plan = bündige, 2-farbige Einlage (Oberseite aufs Druckbett)
 logo_style = "raised";    // [raised:Erhaben, engraved:Graviert, flush:Plan (2-farbig)]
 // Text (nur bei Quelle = Text)
 logo_text = "LOGO";
 // Schriftart
 logo_font = "Liberation Sans:style=Bold";
-// SVG aus der mitgelieferten Bibliothek (nur bei Quelle = SVG)
-logo_file = "star.svg";   // [star.svg, bolt.svg, rings.svg]
+// Form (nur bei Quelle = Form)
+logo_shape = "star";      // [star:Stern, bolt:Blitz, rings:Ringe, hexagon:Sechseck, circle:Kreis-Ring]
 // Zielgröße/-breite des Logos
 logo_size = 30;           // [5:0.5:200]
 // Höhe (erhaben) bzw. Tiefe (graviert/plan) des Logos
@@ -138,11 +138,32 @@ module body_with_recess() {
   }
 }
 
+// Prozedurale Formen – immer zentriert, exakt skaliert, keine Zusatzdateien.
+module shape_star(s) {
+  R = s / 2; r = R * 0.42;
+  polygon([for (i = [0 : 9]) let(a = 90 + i * 36, rad = (i % 2 == 0) ? R : r) [rad * cos(a), rad * sin(a)]]);
+}
+module shape_bolt(s) {
+  translate([-2, 0]) scale(s / 92) polygon([[8, 46], [-26, -6], [-2, -6], [-10, -46], [30, 10], [4, 10]]);
+}
+module shape_rings(s) {
+  R = s / 2;
+  difference() { circle(r = R, $fn = fn); circle(r = R * 0.80, $fn = fn); }
+  circle(r = R * 0.28, $fn = fn);
+}
+module shape_hex(s)    { circle(r = s / 2, $fn = 6); }
+module shape_circle(s) { difference() { circle(r = s / 2, $fn = fn); circle(r = s / 2 * 0.6, $fn = fn); } }
+
 module logo_2d() {
   if (logo_mode == "text")
     text(logo_text, size = logo_size * 0.5, halign = "center", valign = "center", font = logo_font);
-  else if (logo_mode == "svg")
-    resize([logo_size, 0, 0], auto = true) import(logo_file, center = true);
+  else if (logo_mode == "shape") {
+    if      (logo_shape == "star")    shape_star(logo_size);
+    else if (logo_shape == "bolt")    shape_bolt(logo_size);
+    else if (logo_shape == "rings")   shape_rings(logo_size);
+    else if (logo_shape == "hexagon") shape_hex(logo_size);
+    else if (logo_shape == "circle")  shape_circle(logo_size);
+  }
 }
 
 module outline_2d() {

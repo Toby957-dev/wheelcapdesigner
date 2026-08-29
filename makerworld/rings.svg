@@ -1,4 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" width="100" height="100">
-  <path fill-rule="evenodd" d="M -46,0 a46,46 0 1,0 92,0 a46,46 0 1,0 -92,0 Z M -32,0 a32,32 0 1,0 64,0 a32,32 0 1,0 -64,0 Z" fill="black"/>
-  <circle cx="0" cy="0" r="15" fill="black"/>
-</svg>
