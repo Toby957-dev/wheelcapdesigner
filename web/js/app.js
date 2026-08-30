@@ -7,7 +7,7 @@ import { DEFAULTS, GROUPS } from './config.js';
 import { BRAND_LIBRARY, GENERIC } from './brands.js';
 import { loadUserPresets, saveUserPreset, deleteUserPreset, proposalJSON } from './userPresets.js';
 import { supabaseEnabled, fetchCommunityGroup, submitProposal } from './supabase.js';
-import { buildCap, derive } from './geometry.js';
+import { buildCap, derive, initGeometry } from './geometry.js';
 import { svgToGeometry, textToGeometry, shapeToGeometry } from './logo.js';
 import { export3MF } from './threemf.js';
 
@@ -383,7 +383,7 @@ async function rebuild() {
     } else if (state.logoMode === 'text' && state.logoText.trim()) {
       logo = { geometry: await textToGeometry(state.logoText, state.logoDepth, state.logoSize) };
     }
-    const { body, logo: logoGeo } = buildCap(state, logo);
+    const { body, logo: logoGeo } = await buildCap(state, logo);
     if (capMesh) { capMesh.geometry.dispose(); capMesh.geometry = body; }
     else { capMesh = new THREE.Mesh(body, capMaterial); scene.add(capMesh); frameObject(body); }
     if (logoGeo) {
@@ -487,7 +487,7 @@ function download3MF() {
 
 // ============ Start ============
 try {
-  initThree(); buildUI(); rebuild();
+  initThree(); buildUI(); initGeometry(); rebuild();
   setupDownloadPopup(); initKofi();
   if (supabaseEnabled()) {
     fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); } });

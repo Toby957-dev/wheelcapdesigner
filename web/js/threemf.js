@@ -18,12 +18,13 @@ const RELS = `<?xml version="1.0" encoding="UTF-8"?>
 const f = (n) => (Math.round(n * 1000) / 1000);
 
 function meshXML(geo) {
-  const g0 = geo.index ? geo.toNonIndexed() : geo.clone();
+  const g0 = geo.clone();
   g0.rotateX(-Math.PI / 2); // Y-up -> Z-up (Druckbett)
-  const pos = g0.attributes.position;
+  const pos = g0.attributes.position, idx = g0.index;
   const v = [], t = [];
   for (let i = 0; i < pos.count; i++) v.push(`<vertex x="${f(pos.getX(i))}" y="${f(pos.getY(i))}" z="${f(pos.getZ(i))}"/>`);
-  for (let i = 0; i < pos.count; i += 3) t.push(`<triangle v1="${i}" v2="${i + 1}" v3="${i + 2}"/>`);
+  if (idx) for (let i = 0; i < idx.count; i += 3) t.push(`<triangle v1="${idx.getX(i)}" v2="${idx.getX(i + 1)}" v3="${idx.getX(i + 2)}"/>`);
+  else for (let i = 0; i < pos.count; i += 3) t.push(`<triangle v1="${i}" v2="${i + 1}" v3="${i + 2}"/>`);
   return `<mesh><vertices>${v.join('')}</vertices><triangles>${t.join('')}</triangles></mesh>`;
 }
 

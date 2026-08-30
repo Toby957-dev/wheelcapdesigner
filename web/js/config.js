@@ -9,10 +9,12 @@ export const DEFAULTS = {
   faceThickness: 2.0,
   // Rand & Profil
   topChamfer: 1.0,
-  capProfile: 'flat',      // flat | dome (CenterLock)
+  capProfile: 'flat',      // flat | dome (CenterLock-Mutter)
+  nutSides: 6,
+  polygonSize: 44,
   domeHeight: 5,
-  platformDiameter: 42,
-  flangeWidth: 3,
+  platformDiameter: 30,
+  rounding: 0.15,
   // Clips
   clipCount: 6,
   clipThickness: 1.6,
@@ -56,11 +58,13 @@ export const GROUPS = [
     params: [
       { key: 'capProfile', label: 'Profil', type: 'select', options: [
           { value: 'flat', label: 'Flach' },
-          { value: 'dome', label: 'CenterLock (erhöhte Mitte)' },
+          { value: 'dome', label: 'CenterLock (Mutter)' },
         ] },
-      { key: 'domeHeight', label: 'Dom-Höhe', min: 1, max: 20, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Wie hoch die Mitte über dem Rand steht' },
-      { key: 'platformDiameter', label: 'Plattform-Ø', min: 10, max: 210, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Ø der erhöhten Fläche (Logo sitzt darauf)' },
-      { key: 'flangeWidth', label: 'Flansch-Breite', min: 0, max: 25, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', expert: true, hint: 'Flacher Rand rund um den Dom' },
+      { key: 'nutSides', label: 'Ecken', min: 3, max: 12, step: 1, unit: '', showIf: p => p.capProfile === 'dome', hint: 'Anzahl Ecken der Mutter (6 = Sechskant)' },
+      { key: 'polygonSize', label: 'Polygon-Größe', min: 10, max: 210, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Ø der Mutter (über Ecken)' },
+      { key: 'domeHeight', label: 'Höhe', min: 1, max: 20, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Höhe der Erhöhung' },
+      { key: 'platformDiameter', label: 'Plattform-Ø', min: 5, max: 200, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Runde Fläche oben fürs Logo' },
+      { key: 'rounding', label: 'Abrundung', min: 0, max: 0.6, step: 0.05, unit: '', showIf: p => p.capProfile === 'dome', hint: 'Kanten oben abschrägen (0 = scharf)' },
       { key: 'topChamfer', label: 'Fase oben', min: 0, max: 8, step: 0.2, unit: 'mm', expert: true },
     ],
   },
