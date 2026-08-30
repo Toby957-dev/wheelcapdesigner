@@ -7,8 +7,12 @@ export const DEFAULTS = {
   mountDiameter: 56,
   totalHeight: 12,
   faceThickness: 2.0,
-  // Rand
+  // Rand & Profil
   topChamfer: 1.0,
+  capProfile: 'flat',      // flat | dome (CenterLock)
+  domeHeight: 5,
+  platformDiameter: 42,
+  flangeWidth: 3,
   // Clips
   clipCount: 6,
   clipThickness: 1.6,
@@ -48,8 +52,15 @@ export const GROUPS = [
     ],
   },
   {
-    id: 'edge', label: 'Rand', icon: 'circle',
+    id: 'edge', label: 'Rand & Profil', icon: 'circle',
     params: [
+      { key: 'capProfile', label: 'Profil', type: 'select', options: [
+          { value: 'flat', label: 'Flach' },
+          { value: 'dome', label: 'CenterLock (erhöhte Mitte)' },
+        ] },
+      { key: 'domeHeight', label: 'Dom-Höhe', min: 1, max: 20, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Wie hoch die Mitte über dem Rand steht' },
+      { key: 'platformDiameter', label: 'Plattform-Ø', min: 10, max: 210, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Ø der erhöhten Fläche (Logo sitzt darauf)' },
+      { key: 'flangeWidth', label: 'Flansch-Breite', min: 0, max: 25, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', expert: true, hint: 'Flacher Rand rund um den Dom' },
       { key: 'topChamfer', label: 'Fase oben', min: 0, max: 8, step: 0.2, unit: 'mm', expert: true },
     ],
   },

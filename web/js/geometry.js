@@ -63,6 +63,18 @@ function buildRing(inner, outer, depth) {
   return new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, curveSegments: 128 });
 }
 
+// CenterLock: erhöhter, angeschrägter Dom (Frustum) auf der Deckplatte.
+function buildDome(d, p) {
+  const domeH = Math.max(0.5, p.domeHeight);
+  const platR = Math.min(Math.max(2, p.platformDiameter / 2), d.topR - 1);
+  const baseR = Math.max(platR + 0.5, Math.min(d.topR - p.flangeWidth, d.topR - 0.5));
+  const topZ = d.H + domeH;
+  const prof = [
+    [0, topZ], [platR, topZ], [baseR, d.H - 0.3], [0, d.H - 0.3],
+  ].map(([r, z]) => new THREE.Vector2(Math.max(0, r), z));
+  return new THREE.LatheGeometry(prof, 160);
+}
+
 function finalize(brushOrGeo) {
   const g = (brushOrGeo.geometry ? brushOrGeo.geometry : brushOrGeo).clone();
   g.computeVertexNormals(); g.computeBoundingBox(); g.computeBoundingSphere();
@@ -70,7 +82,7 @@ function finalize(brushOrGeo) {
 }
 
 // Zweitfarb-Element (Logo + optionale Rand-Outline) im lokalen Raum: liegend, y in [0, depth].
-function buildElement(p, d, logo) {
+function buildElement(p, d, logo, outlineBaseR) {
   const depth = Math.max(0.4, p.logoDepth);
   const parts = [];
 
@@ -83,7 +95,7 @@ function buildElement(p, d, logo) {
   }
 
   if (p.outlineWidth > 0) {
-    const outer = Math.min(d.topR - p.outlineGap, d.topR - 0.5);
+    const outer = Math.min(outlineBaseR - p.outlineGap, outlineBaseR - 0.5);
     const inner = Math.max(1, outer - p.outlineWidth);
     if (outer > inner) {
       const rg = buildRing(inner, outer, depth);
@@ -110,10 +122,20 @@ export function buildCap(p, logo) {
   const plate = new Brush(buildPlate(d)); plate.updateMatrixWorld();
   result = evaluator.evaluate(result, plate, ADDITION);
 
+  // 2b) CenterLock: Dom aufsetzen
+  const isDome = p.capProfile === 'dome';
+  const topZ = isDome ? d.H + Math.max(0.5, p.domeHeight) : d.H;
+  const platR = Math.min(Math.max(2, p.platformDiameter / 2), d.topR - 1);
+  const outlineBaseR = isDome ? platR : d.topR;
+  if (isDome) {
+    const dome = new Brush(buildDome(d, p)); dome.updateMatrixWorld();
+    result = evaluator.evaluate(result, dome, ADDITION);
+  }
+
   // 3) Logo-Vertiefung (Teller)
   if (p.logoMode !== 'none' && p.logoRecessDepth > 0) {
     const rec = new THREE.CylinderGeometry(p.logoRecessDiameter / 2, p.logoRecessDiameter / 2, p.logoRecessDepth + 0.2, 96);
-    rec.translate(0, d.H - p.logoRecessDepth / 2 + 0.1, 0);
+    rec.translate(0, topZ - p.logoRecessDepth / 2 + 0.1, 0);
     const rb = new Brush(rec); rb.updateMatrixWorld();
     result = evaluator.evaluate(result, rb, SUBTRACTION);
   }
@@ -121,9 +143,9 @@ export function buildCap(p, logo) {
   // 4) Logo + Outline je nach Stil
   let logoGeo = null;
   if (p.logoMode !== 'none') {
-    const el = buildElement(p, d, logo);
+    const el = buildElement(p, d, logo, outlineBaseR);
     if (el) {
-      const surfaceY = d.H - (p.logoRecessDepth > 0 ? p.logoRecessDepth : 0);
+      const surfaceY = topZ - (p.logoRecessDepth > 0 ? p.logoRecessDepth : 0);
       const depth = el.depth;
 
       if (p.logoStyle === 'raised') {
