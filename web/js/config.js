@@ -14,6 +14,8 @@ export const DEFAULTS = {
   polygonSize: 44,
   domeHeight: 5,
   platformDiameter: 30,
+  platformMode: 'flush',   // flush | raised | recessed
+  platformDepth: 1.5,
   rounding: 0.15,
   // Clips
   clipCount: 6,
@@ -64,6 +66,12 @@ export const GROUPS = [
       { key: 'polygonSize', label: 'Polygon-Größe', min: 10, max: 210, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Ø der Mutter (über Ecken)' },
       { key: 'domeHeight', label: 'Höhe', min: 1, max: 20, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Höhe der Erhöhung' },
       { key: 'platformDiameter', label: 'Plattform-Ø', min: 5, max: 200, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Runde Fläche oben fürs Logo' },
+      { key: 'platformMode', label: 'Plattform', type: 'select', showIf: p => p.capProfile === 'dome', options: [
+          { value: 'flush', label: 'Bündig (keine extra Fläche)' },
+          { value: 'raised', label: 'Erhöht' },
+          { value: 'recessed', label: 'Vertieft' },
+        ], hint: 'Lage der Logo-Fläche auf der Mutter' },
+      { key: 'platformDepth', label: 'Vertiefung-Tiefe', min: 0.4, max: 10, step: 0.1, unit: 'mm', showIf: p => p.capProfile === 'dome' && p.platformMode === 'recessed' },
       { key: 'rounding', label: 'Abrundung', min: 0, max: 0.6, step: 0.05, unit: '', showIf: p => p.capProfile === 'dome', hint: 'Kanten oben abschrägen (0 = scharf)' },
       { key: 'topChamfer', label: 'Fase oben', min: 0, max: 8, step: 0.2, unit: 'mm', expert: true },
     ],

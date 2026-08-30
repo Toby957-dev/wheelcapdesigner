@@ -2,7 +2,7 @@
 // Aufbau in Z-up (Manifold-nativ); Ausgabe wird für die App auf Y-up gedreht.
 
 import * as THREE from 'three';
-import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeVertices, toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 
 let wasm = null;
 async function MF() {
@@ -59,7 +59,15 @@ function toThree(man) {
   geo.rotateX(-Math.PI / 2);            // Z-up -> Y-up
   geo.computeVertexNormals();
   geo.computeBoundingBox(); geo.computeBoundingSphere();
-  return geo;
+  return geo;                            // exakter Manifold-Index -> wasserdicht (Export)
+}
+// Anzeige-Variante mit kantenbetonten Normalen: harte Kanten (Fasen, Facetten,
+// Absätze) bleiben scharf, Rundflächen bleiben glatt. NICHT für Export nutzen
+// (de-indiziert). Original bleibt unangetastet.
+function displayOf(geo) {
+  const d = toCreasedNormals(geo.clone(), Math.PI / 6); // ~30° Knickwinkel
+  d.computeBoundingBox(); d.computeBoundingSphere();
+  return d;
 }
 // Winzige, lose Fragmente (Boolean-Debris) entfernen -> sauberes, wasserdichtes Netz.
 function cleanup(man, trash) {
@@ -137,9 +145,20 @@ export async function buildCap(p, logo) {
         nut = T(nut.add(cap));
       }
       body = T(body.add(nut));
-      const plat = T(Manifold.cylinder(platH, platR, platR, seg).translate([0, 0, d.H + domeH]));
-      body = T(body.add(plat));
-      topZ = d.H + domeH + platH;
+      const nutTop = d.H + domeH;
+      const platMode = p.platformMode || 'flush';
+      if (platMode === 'raised') {
+        const plat = T(Manifold.cylinder(platH, platR, platR, seg).translate([0, 0, nutTop]));
+        body = T(body.add(plat));
+        topZ = nutTop + platH;
+      } else if (platMode === 'recessed') {
+        const pd = Math.max(0.4, Math.min(p.platformDepth || 1.5, domeH - 0.4));
+        const pocket = T(Manifold.cylinder(pd + 0.4, platR, platR, seg).translate([0, 0, nutTop - pd]));
+        body = T(body.subtract(pocket));
+        topZ = nutTop - pd;
+      } else { // flush – Logo direkt auf der Mutteroberseite
+        topZ = nutTop;
+      }
       outlineBaseR = platR;
     }
 
@@ -187,7 +206,10 @@ export async function buildCap(p, logo) {
     }
 
     const bodyGeo = toThree(cleanup(body, trash));
-    return { body: bodyGeo, logo: logoGeo };
+    return {
+      body: displayOf(bodyGeo), bodyExport: bodyGeo,
+      logo: logoGeo ? displayOf(logoGeo) : null, logoExport: logoGeo,
+    };
   } finally {
     for (const m of trash) { try { m.delete(); } catch (e) {} }
   }

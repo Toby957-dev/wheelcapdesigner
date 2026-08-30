@@ -383,14 +383,17 @@ async function rebuild() {
     } else if (state.logoMode === 'text' && state.logoText.trim()) {
       logo = { geometry: await textToGeometry(state.logoText, state.logoDepth, state.logoSize) };
     }
-    const { body, logo: logoGeo } = await buildCap(state, logo);
-    if (capMesh) { capMesh.geometry.dispose(); capMesh.geometry = body; }
+    const { body, bodyExport, logo: logoGeo, logoExport } = await buildCap(state, logo);
+    // Anzeige = kantenbetont (body/logoGeo); Export = exakt wasserdicht (…Export).
+    if (capMesh) { capMesh.geometry.dispose(); capMesh.userData.exportGeo?.dispose(); capMesh.geometry = body; }
     else { capMesh = new THREE.Mesh(body, capMaterial); scene.add(capMesh); frameObject(body); }
+    capMesh.userData.exportGeo = bodyExport;
     if (logoGeo) {
-      if (logoMesh) { logoMesh.geometry.dispose(); logoMesh.geometry = logoGeo; logoMesh.visible = true; }
+      if (logoMesh) { logoMesh.geometry.dispose(); logoMesh.userData.exportGeo?.dispose(); logoMesh.geometry = logoGeo; logoMesh.visible = true; }
       else { logoMesh = new THREE.Mesh(logoGeo, logoMaterial); scene.add(logoMesh); }
-    } else if (logoMesh) { logoMesh.visible = false; logoMesh.geometry.dispose(); logoMesh.geometry = new THREE.BufferGeometry(); }
-    updateBadge(body, logoGeo);
+      logoMesh.userData.exportGeo = logoExport;
+    } else if (logoMesh) { logoMesh.visible = false; logoMesh.geometry.dispose(); logoMesh.userData.exportGeo?.dispose(); logoMesh.userData.exportGeo = null; logoMesh.geometry = new THREE.BufferGeometry(); }
+    updateBadge(bodyExport, logoExport);
   } catch (e) { console.error(e); showWarn('Fehler beim Erzeugen: ' + e.message); }
   finally { statusEl.classList.remove('show'); building = false; if (pending) { pending = false; rebuild(); } }
 }
@@ -468,10 +471,14 @@ function forExport(geo) {
 }
 function baseName() { return `wheelcap_${state.outerDiameter}x${state.mountDiameter}mm`; }
 
+// Immer die wasserdichte Export-Geometrie verwenden (nicht die Anzeige-Variante).
+function capExportGeo() { return capMesh.userData.exportGeo || capMesh.geometry; }
+function logoExportGeo() { return logoMesh.userData.exportGeo || logoMesh.geometry; }
+
 function downloadSTL() {
   if (!capMesh) return;
-  const geos = [forExport(capMesh.geometry)];
-  if (logoMesh && logoMesh.visible) geos.push(forExport(logoMesh.geometry));
+  const geos = [forExport(capExportGeo())];
+  if (logoMesh && logoMesh.visible) geos.push(forExport(logoExportGeo()));
   const merged = geos.length > 1 ? mergeGeometries(geos, false) : geos[0];
   download(stlBlob(merged), baseName() + '.stl');
   showDownloadPopup();
@@ -479,8 +486,8 @@ function downloadSTL() {
 
 function download3MF() {
   if (!capMesh) return;
-  const parts = [{ geometry: capMesh.geometry, color: state.capColor, name: 'Deckel' }];
-  if (logoMesh && logoMesh.visible) parts.push({ geometry: logoMesh.geometry, color: state.logoColor, name: 'Logo' });
+  const parts = [{ geometry: capExportGeo(), color: state.capColor, name: 'Deckel' }];
+  if (logoMesh && logoMesh.visible) parts.push({ geometry: logoExportGeo(), color: state.logoColor, name: 'Logo' });
   download(export3MF(parts), baseName() + '.3mf');
   showDownloadPopup();
 }
