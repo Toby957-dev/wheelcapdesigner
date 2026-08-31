@@ -128,7 +128,11 @@ function makeControl(meta) {
     const inp = document.createElement('input');
     inp.type = 'range'; inp.min = meta.min; inp.max = meta.max; inp.step = meta.step; inp.value = state[meta.key];
     rw.appendChild(inp);
-    rw.insertAdjacentHTML('beforeend', `<span class="range-center" title="Mitte"></span>`);
+    // Mittelstrich = Standardwert der Vorlage; der Griff startet genau darauf.
+    // 16px = Thumb-Breite, damit Tick & Griffmitte exakt fluchten (Rand-Einzug).
+    const def = DEFAULTS[meta.key];
+    const p = meta.max > meta.min ? (def - meta.min) / (meta.max - meta.min) : 0.5;
+    rw.insertAdjacentHTML('beforeend', `<span class="range-center" title="Standard: ${fmt(def, meta.step)}${meta.unit || ''}" style="left:calc(8px + ${p} * (100% - 16px))"></span>`);
     inp.addEventListener('input', () => { state[meta.key] = parseFloat(inp.value); numInp.value = fmt(state[meta.key], meta.step); onParamChange(false); });
     numInp.addEventListener('input', () => {
       let v = parseFloat(numInp.value); if (isNaN(v)) return;
