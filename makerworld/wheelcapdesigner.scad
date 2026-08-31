@@ -24,6 +24,24 @@ face_thickness = 2.0;     // [0.8:0.2:6]
 // Fase (Abschrägung) an der oberen Außenkante
 top_chamfer = 1.0;        // [0:0.2:8]
 
+/* [Profil (CenterLock)] */
+// Deckelprofil: Flach oder CenterLock-Mutter (Sechskant) als Erhöhung
+cap_profile = "flat";       // [flat:Flach, dome:CenterLock (Mutter)]
+// Anzahl Ecken der Mutter (6 = Sechskant)
+nut_sides = 6;              // [3:1:12]
+// Durchmesser der Mutter (über die Ecken)
+polygon_size = 44;          // [10:0.5:210]
+// Höhe der Erhöhung
+dome_height = 5;            // [1:0.5:20]
+// Runde Plattform oben fürs Logo: Durchmesser
+platform_diameter = 30;     // [5:0.5:200]
+// Plattform-Lage
+platform_mode = "flush";    // [flush:Bündig (keine extra Fläche), raised:Erhöht, recessed:Vertieft]
+// Tiefe der Vertiefung (nur bei „Vertieft")
+platform_depth = 1.5;       // [0.4:0.1:10]
+// Obere Kanten der Mutter abrunden/fasen (0 = scharf)
+rounding = 0.15;            // [0:0.05:0.6]
+
 /* [Schnappnasen] */
 // Anzahl der Clips
 clip_count = 6;           // [2:1:16]
@@ -96,7 +114,24 @@ gap_w     = max(1, pitch - clip_w);
 chamfer   = min(top_chamfer, top_r - 0.5, face_thickness - 0.1);
 H         = total_height;
 depth     = max(0.4, logo_depth);
-surface_z = H - (logo_recess_depth > 0 ? logo_recess_depth : 0);
+
+// ---- CenterLock (Mutter) ----
+is_nut     = cap_profile == "dome";
+n_sides    = max(3, nut_sides);
+nut_r      = max(3, min(polygon_size / 2, top_r - 0.5));
+dome_h     = max(0.5, dome_height);
+plat_r     = min(max(2, platform_diameter / 2), nut_r);
+round_ch   = max(0, min(0.6, rounding)) * min(dome_h * 0.8, nut_r * 0.5);
+nut_bodyH  = max(0.2, dome_h - round_ch);
+plat_h     = 1.2;
+nut_top_z  = H + dome_h;
+pocket_d   = min(platform_depth, dome_h - 0.4);
+top_z      = !is_nut ? H
+           : platform_mode == "raised"   ? nut_top_z + plat_h
+           : platform_mode == "recessed" ? nut_top_z - pocket_d
+           :                               nut_top_z;
+outline_base_r = is_nut ? plat_r : top_r;
+surface_z = top_z - (logo_recess_depth > 0 ? logo_recess_depth : 0);
 
 // ---- Bauteile ----
 module skirt_ring() {
@@ -122,18 +157,37 @@ module plate() {
     ]);
 }
 
+// CenterLock-Mutter: senkrechte Facetten + optionale Fase an der Oberkante.
+module nut_solid() {
+  rotate([0, 0, 180 / n_sides])          // flache Seite nach vorn (wie Web)
+    union() {
+      cylinder(h = nut_bodyH, r = nut_r, $fn = n_sides);
+      if (round_ch > 0.05)
+        translate([0, 0, nut_bodyH])
+          cylinder(h = round_ch, r1 = nut_r, r2 = max(nut_r * 0.25, nut_r - round_ch), $fn = n_sides);
+    }
+}
+
 module cap_body() {
   union() {
     difference() { skirt_ring(); gaps(); }
     plate();
+    if (is_nut) translate([0, 0, H]) nut_solid();
+    if (is_nut && platform_mode == "raised")
+      translate([0, 0, nut_top_z]) cylinder(h = plat_h, r = plat_r, $fn = fn);
   }
 }
 
 module body_with_recess() {
   difference() {
     cap_body();
+    // Vertiefte runde Plattform in die Mutteroberseite
+    if (is_nut && platform_mode == "recessed")
+      translate([0, 0, nut_top_z - pocket_d])
+        cylinder(h = pocket_d + 0.4, r = plat_r, $fn = fn);
+    // Vertiefter „Teller" unter dem Logo
     if (logo_mode != "none" && logo_recess_depth > 0)
-      translate([0, 0, H - logo_recess_depth])
+      translate([0, 0, top_z - logo_recess_depth])
         cylinder(h = logo_recess_depth + 1, r = logo_recess_diameter / 2, $fn = fn);
   }
 }
@@ -168,7 +222,7 @@ module logo_2d() {
 
 module outline_2d() {
   if (outline_width > 0) {
-    o = min(top_r - outline_gap, top_r - 0.5);
+    o = min(outline_base_r - outline_gap, outline_base_r - 0.5);
     i = max(1, o - outline_width);
     difference() { circle(r = o, $fn = fn); circle(r = i, $fn = fn); }
   }
