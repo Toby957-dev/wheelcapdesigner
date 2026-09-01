@@ -75,7 +75,14 @@
       </div>
     </div>
     <div class="topbar-actions">
+      <a class="mw-link" id="mwLink" href="#" target="_blank" rel="noopener" title="Auf MakerWorld ansehen" style="display:none">
+        <img alt="MakerWorld" data-src="/makerworld-logo.svg" onerror="this.closest('.mw-link').classList.add('mw-fallback')" />
+        <span class="mw-fallback-text">MakerWorld</span>
+      </a>
       <span class="kofi-slot" id="kofiTop"></span>
+      <button class="icon-btn" id="feedbackBtn" title="Feedback geben" aria-label="Feedback geben">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
       <button class="icon-btn" id="themeToggle" title="Hell/Dunkel umschalten" aria-label="Hell/Dunkel umschalten">
         <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
@@ -111,6 +118,20 @@
       <p>Wenn dir <b>WheelCapDesigner</b> gefällt, freue ich mich riesig über einen Kaffee. Danke! 🙌</p>
       <div class="kofi-slot kofi-slot-lg" id="kofiPopup"></div>
       <button class="btn btn-ghost" id="dlContinue">Weiter zum Designen</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="fbModal">
+    <div class="modal">
+      <button class="modal-close" id="fbClose" aria-label="Schließen">&times;</button>
+      <div class="modal-cup">💬</div>
+      <h3>Feedback zum Designer</h3>
+      <p>Wie gefällt dir WheelCapDesigner? Über Sterne und ein paar Worte freue ich mich sehr.</p>
+      <div class="stars stars-lg" id="fbStars" role="radiogroup" aria-label="Bewertung"></div>
+      <textarea class="fb-text" id="fbText" rows="4" placeholder="Was läuft gut, was fehlt dir?"></textarea>
+      <input type="email" class="fb-email" id="fbEmail" placeholder="E-Mail (optional, für Rückfragen)" />
+      <button class="btn btn-primary btn-block" id="fbSend">Feedback senden</button>
+      <div class="fb-status" id="fbStatus"></div>
     </div>
   </div>
 

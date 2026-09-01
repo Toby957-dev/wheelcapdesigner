@@ -50,3 +50,54 @@ create policy "anon insert proposals"
 --   insert into cap_templates (brand, label, outer_diameter, mount_diameter, total_height, clip_count, approved)
 --   select brand, label, outer_diameter, mount_diameter, coalesce(total_height,12), coalesce(clip_count,6), true
 --   from cap_proposals where id = '...';
+
+
+-- ============================================================
+-- 5) Bewertungen für Vorlagen + Feedback zum Designer
+--    (nachträglich – einfach zusätzlich im SQL-Editor ausführen)
+-- ============================================================
+
+-- 5a) Bewertungen einzelner Vorlagen (1–5). Eine Stimme pro Browser (voter).
+create table if not exists cap_ratings (
+  id          uuid primary key default gen_random_uuid(),
+  template_id uuid not null references cap_templates(id) on delete cascade,
+  rating      int  not null check (rating between 1 and 5),
+  voter       text not null,                       -- anonyme Browser-Kennung
+  created_at  timestamptz not null default now(),
+  unique (template_id, voter)                       -- Upsert-Ziel (eine Stimme je Browser)
+);
+create index if not exists cap_ratings_template_idx on cap_ratings(template_id);
+
+-- 5b) Allgemeines Feedback zum Designer
+create table if not exists cap_feedback (
+  id         uuid primary key default gen_random_uuid(),
+  rating     int check (rating between 1 and 5),
+  message    text,
+  email      text,
+  created_at timestamptz not null default now()
+);
+
+-- 5c) Öffentliche Zusammenfassung: Schnitt + Stimmenzahl je Vorlage
+create or replace view cap_rating_summary as
+  select template_id,
+         round(avg(rating)::numeric, 2) as avg_rating,
+         count(*)::int                  as votes
+  from cap_ratings
+  group by template_id;
+
+-- 5d) Row-Level-Security
+alter table cap_ratings  enable row level security;
+alter table cap_feedback enable row level security;
+
+-- Jeder darf abstimmen (Upsert = insert + update der eigenen Stimme)
+create policy "anon insert ratings" on cap_ratings
+  for insert with check (true);
+create policy "anon update ratings" on cap_ratings
+  for update using (true) with check (true);
+
+-- Feedback nur einreichen (nicht öffentlich lesbar; Auswertung im Dashboard)
+create policy "anon insert feedback" on cap_feedback
+  for insert with check (true);
+
+-- Zusammenfassung öffentlich lesbar machen (Einzelstimmen bleiben ungelesen).
+grant select on cap_rating_summary to anon, authenticated;

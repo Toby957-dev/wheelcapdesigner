@@ -26,16 +26,25 @@ export async function fetchCommunityGroup() {
     if (!c) return null;
     const { data, error } = await c
       .from('cap_templates')
-      .select('brand,label,outer_diameter,mount_diameter,total_height,clip_count')
+      .select('id,brand,label,outer_diameter,mount_diameter,total_height,clip_count')
       .eq('approved', true)
       .order('brand', { ascending: true });
     if (error || !data || !data.length) return null;
+
+    // Bewertungs-Zusammenfassung laden (best effort – fehlt die View, bleibt es leer).
+    const sum = {};
+    try {
+      const { data: rs } = await c.from('cap_rating_summary').select('template_id,avg_rating,votes');
+      if (rs) for (const r of rs) sum[r.template_id] = { avg: +r.avg_rating || 0, votes: +r.votes || 0 };
+    } catch (_) { /* View evtl. noch nicht angelegt */ }
 
     const byBrand = new Map();
     for (const r of data) {
       if (!byBrand.has(r.brand)) byBrand.set(r.brand, []);
       byBrand.get(r.brand).push({
+        id: r.id,
         label: r.label,
+        rating: sum[r.id] || { avg: 0, votes: 0 },
         values: {
           outerDiameter: +r.outer_diameter, mountDiameter: +r.mount_diameter,
           totalHeight: +r.total_height || 12, clipCount: +r.clip_count || 6,
@@ -62,6 +71,45 @@ export async function submitProposal(p) {
     clip_count: p.clipCount,
     submitted_by: p.email || null,
     note: p.note || null,
+  });
+  return { ok: !error, error };
+}
+
+// Eine Vorlage bewerten (1–5). Pro Browser (voter) eine Stimme – Upsert überschreibt.
+export async function rateTemplate(templateId, rating, voter) {
+  const c = await getClient();
+  if (!c) return { ok: false, reason: 'not-configured' };
+  const { error } = await c
+    .from('cap_ratings')
+    .upsert({ template_id: templateId, rating, voter }, { onConflict: 'template_id,voter' });
+  if (error) return { ok: false, error };
+  // Aktualisierten Schnitt zurückgeben
+  const summary = await fetchTemplateRating(templateId);
+  return { ok: true, summary };
+}
+
+// Aktuellen Schnitt + Stimmenzahl einer Vorlage holen.
+export async function fetchTemplateRating(templateId) {
+  const c = await getClient();
+  if (!c) return null;
+  try {
+    const { data } = await c
+      .from('cap_rating_summary')
+      .select('avg_rating,votes')
+      .eq('template_id', templateId)
+      .maybeSingle();
+    return data ? { avg: +data.avg_rating || 0, votes: +data.votes || 0 } : { avg: 0, votes: 0 };
+  } catch (_) { return { avg: 0, votes: 0 }; }
+}
+
+// Allgemeines Feedback zum Designer senden.
+export async function submitFeedback(f) {
+  const c = await getClient();
+  if (!c) return { ok: false, reason: 'not-configured' };
+  const { error } = await c.from('cap_feedback').insert({
+    rating: f.rating || null,
+    message: f.message || null,
+    email: f.email || null,
   });
   return { ok: !error, error };
 }

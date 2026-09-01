@@ -6,12 +6,52 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { DEFAULTS, GROUPS } from './config.js';
 import { BRAND_LIBRARY, GENERIC } from './brands.js';
 import { loadUserPresets, saveUserPreset, deleteUserPreset, proposalJSON } from './userPresets.js';
-import { supabaseEnabled, fetchCommunityGroup, submitProposal } from './supabase.js';
+import { supabaseEnabled, fetchCommunityGroup, submitProposal, rateTemplate, submitFeedback } from './supabase.js';
 import { buildCap, derive, initGeometry } from './geometry.js';
 import { svgToGeometry, textToGeometry, shapeToGeometry } from './logo.js';
 import { export3MF } from './threemf.js';
 
 const SUBMIT_EMAIL = 'vorlagen@example.com';
+
+// >>> HIER deinen MakerWorld-Profil-Link eintragen (dann erscheint der Button oben) <<<
+const MAKERWORLD_URL = '';   // z. B. 'https://makerworld.com/en/@deinname'
+
+// Eindeutige, anonyme Kennung pro Browser (eine Stimme je Vorlage).
+function voterId() {
+  let v = null;
+  try { v = localStorage.getItem('wcd_voter'); } catch (_) {}
+  if (!v) {
+    v = (self.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'v' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    try { localStorage.setItem('wcd_voter', v); } catch (_) {}
+  }
+  return v;
+}
+function myVote(id) { try { return +localStorage.getItem('wcd_vote_' + id) || 0; } catch (_) { return 0; } }
+function setMyVote(id, r) { try { localStorage.setItem('wcd_vote_' + id, String(r)); } catch (_) {} }
+
+const STAR_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.26L21.8 9.3l-5 4.9 1.2 6.9L12 17.8 6 21.1l1.2-6.9-5-4.9 6.9-1.04z"/></svg>';
+
+// Sterne-Widget. onPick != null => interaktiv. filled = Anzahl voller Sterne (gerundet).
+function buildStars(container, filled, onPick) {
+  container.innerHTML = '';
+  container.classList.toggle('readonly', !onPick);
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    const s = document.createElement('span');
+    s.className = 'star' + (i <= filled ? ' on' : '');
+    s.innerHTML = STAR_SVG;
+    if (onPick) {
+      s.setAttribute('role', 'radio'); s.setAttribute('aria-label', i + ' Sterne'); s.tabIndex = 0;
+      const paint = n => stars.forEach((el, k) => el.classList.toggle('on', k < n));
+      s.addEventListener('mouseenter', () => paint(i));
+      s.addEventListener('click', () => onPick(i));
+      s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(i); } });
+    }
+    container.appendChild(s); stars.push(s);
+  }
+  container.onmouseleave = onPick ? () => stars.forEach((el, k) => el.classList.toggle('on', k < filled)) : null;
+  return stars;
+}
 
 // Mitgelieferte Beispiel-/Bibliotheks-SVGs (unter web/logos/).
 // Eigene oder lizenzierte Marken-Logos hier ergänzen (Rechte beachten!).
@@ -35,6 +75,7 @@ let logoSvgText = null, logoFileName = null;
 const inputs = {}, controlEls = {};
 let library = BRAND_LIBRARY.slice();
 let refreshBrands = () => {};
+let refreshRateBox = () => {};
 
 // ============ 3D ============
 const canvas = document.getElementById('viewport');
@@ -214,13 +255,40 @@ function buildLibrarySection(root) {
     return grp ? grp.brands[+i].entries : [];
   }
   function fillSizes() { sizeSel.innerHTML = entriesFor(brandSel.value).map((e, i) => `<option value="${i}">${e.label}</option>`).join(''); }
-  brandSel.addEventListener('change', () => { fillSizes(); applyValues(entriesFor(brandSel.value)[0].values); });
-  sizeSel.addEventListener('change', () => applyValues(entriesFor(brandSel.value)[+sizeSel.value].values));
+  function currentEntry() { return entriesFor(brandSel.value)[+sizeSel.value]; }
+  brandSel.addEventListener('change', () => { fillSizes(); applyValues(entriesFor(brandSel.value)[0].values); updateRateBox(); });
+  sizeSel.addEventListener('change', () => { applyValues(currentEntry().values); updateRateBox(); });
   populateBrands(); fillSizes();
 
   const l1 = document.createElement('div'); l1.className = 'sub-label'; l1.textContent = 'Hersteller';
   const l2 = document.createElement('div'); l2.className = 'sub-label'; l2.textContent = 'Größe / Modell'; l2.style.marginTop = '10px';
   body.append(l1, brandSel, l2, sizeSel);
+
+  // Bewertung – nur für Community-Vorlagen (haben eine id).
+  const rateBox = document.createElement('div'); rateBox.className = 'tpl-rating'; rateBox.style.display = 'none';
+  body.appendChild(rateBox);
+  refreshRateBox = updateRateBox;
+  function updateRateBox() {
+    const e = currentEntry();
+    if (!e || e.id == null) { rateBox.style.display = 'none'; return; }
+    rateBox.style.display = '';
+    rateBox.innerHTML = `<div class="tr-head">Passt diese Vorlage?</div><div class="tr-row"><span class="stars"></span><span class="tr-avg"></span></div>`;
+    const starsEl = rateBox.querySelector('.stars');
+    const avgEl = rateBox.querySelector('.tr-avg');
+    const mine = myVote(e.id);
+    const showAvg = () => {
+      const r = e.rating || { avg: 0, votes: 0 };
+      avgEl.innerHTML = r.votes ? `Ø <b>${r.avg.toFixed(1)}</b> (${r.votes})` : 'Noch keine Bewertung';
+    };
+    buildStars(starsEl, mine || Math.round((e.rating && e.rating.avg) || 0), async (n) => {
+      if (!supabaseEnabled()) { avgEl.textContent = 'Bewerten aktuell nicht möglich'; return; }
+      setMyVote(e.id, n); buildStars(starsEl, n, null); avgEl.innerHTML = '<span class="tr-thanks">Danke! ✓</span>';
+      const res = await rateTemplate(e.id, n, voterId());
+      if (res.ok && res.summary) { e.rating = res.summary; showAvg(); }
+    });
+    showAvg();
+  }
+
   body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">Richtwerte – bitte am Rad nachmessen.</div>`);
 
   body.insertAdjacentHTML('beforeend', `<div class="divider"></div><div class="sub-label">Eigene Maße speichern</div>`);
@@ -496,12 +564,56 @@ function download3MF() {
   showDownloadPopup();
 }
 
+// ============ MakerWorld-Link + Feedback ============
+function setupMakerWorld() {
+  const a = document.getElementById('mwLink');
+  if (!a) return;
+  if (MAKERWORLD_URL) {
+    a.href = MAKERWORLD_URL;
+    const img = a.querySelector('img');
+    if (img && img.dataset.src) img.src = img.dataset.src;   // Logo erst jetzt laden
+    a.style.display = '';
+  } else {
+    a.style.display = 'none';
+  }
+}
+
+function setupFeedback() {
+  const modal = document.getElementById('fbModal');
+  const starsEl = document.getElementById('fbStars');
+  const textEl = document.getElementById('fbText');
+  const emailEl = document.getElementById('fbEmail');
+  const sendBtn = document.getElementById('fbSend');
+  const st = document.getElementById('fbStatus');
+  if (!modal) return;
+  let picked = 0;
+  const renderStars = () => buildStars(starsEl, picked, (n) => { picked = n; renderStars(); });
+  const close = () => modal.classList.remove('show');
+  const open = () => {
+    picked = 0; textEl.value = ''; emailEl.value = ''; st.textContent = ''; st.className = 'fb-status';
+    sendBtn.disabled = false; sendBtn.textContent = 'Feedback senden';
+    renderStars(); modal.classList.add('show');
+  };
+  document.getElementById('feedbackBtn').addEventListener('click', open);
+  document.getElementById('fbClose').addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+  sendBtn.addEventListener('click', async () => {
+    const message = textEl.value.trim();
+    if (!picked && !message) { st.className = 'fb-status err'; st.textContent = 'Bitte Sterne oder eine Nachricht angeben.'; return; }
+    if (!supabaseEnabled()) { st.className = 'fb-status err'; st.textContent = 'Feedback ist gerade nicht verfügbar.'; return; }
+    sendBtn.disabled = true; sendBtn.textContent = 'Sende …';
+    const r = await submitFeedback({ rating: picked, message, email: emailEl.value.trim() });
+    if (r.ok) { st.className = 'fb-status ok'; st.textContent = 'Danke für dein Feedback! 🙌'; setTimeout(close, 1400); }
+    else { st.className = 'fb-status err'; st.textContent = 'Konnte nicht senden: ' + ((r.error && r.error.message) || r.reason || 'Fehler'); sendBtn.disabled = false; sendBtn.textContent = 'Feedback senden'; }
+  });
+}
+
 // ============ Start ============
 try {
   initThree(); buildUI(); initGeometry(); rebuild();
-  setupDownloadPopup(); initKofi();
+  setupDownloadPopup(); initKofi(); setupMakerWorld(); setupFeedback();
   if (supabaseEnabled()) {
-    fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); } });
+    fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); refreshRateBox(); } });
   }
 } catch (e) {
   console.error(e);

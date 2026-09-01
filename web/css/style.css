@@ -322,3 +322,40 @@ input.ctl[type=text]:focus, select.ctl:focus { outline: none; border-color: var(
   .stage { height: 55%; }
   .brand p { display: none; }
 }
+
+/* ===== MakerWorld-Link (Top-Leiste) ===== */
+.mw-link { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; border: 1px solid var(--border-2); border-radius: var(--radius); background: var(--panel-2); transition: border-color .15s; }
+.mw-link:hover { border-color: var(--faint); }
+.mw-link img { height: 20px; width: auto; display: block; }
+.mw-link .mw-fallback-text { display: none; font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+.mw-link.mw-fallback img { display: none; }
+.mw-link.mw-fallback .mw-fallback-text { display: inline; }
+@media (max-width: 720px) { .mw-link .mw-fallback-text { font-size: 0; } }
+
+/* ===== Sterne-Bewertung ===== */
+.stars { display: inline-flex; gap: 3px; align-items: center; }
+.stars .star { width: 18px; height: 18px; cursor: pointer; color: var(--border-2); transition: color .1s, transform .1s; }
+.stars .star svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.stars .star.on { color: #f5b301; }
+.stars .star:hover { transform: scale(1.12); }
+.stars.readonly .star { cursor: default; }
+.stars.readonly .star:hover { transform: none; }
+.stars-lg { gap: 6px; justify-content: center; margin: 4px 0 16px; }
+.stars-lg .star { width: 30px; height: 30px; }
+
+/* ===== Vorlagen-Bewertung ===== */
+.tpl-rating { margin-top: 10px; padding: 10px 12px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; }
+.tpl-rating .tr-head { font-size: 11px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 7px; }
+.tpl-rating .tr-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.tpl-rating .tr-avg { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tpl-rating .tr-avg b { color: var(--text); }
+.tpl-rating .tr-thanks { color: var(--good); }
+
+/* ===== Feedback-Dialog ===== */
+.fb-text, .fb-email { width: 100%; background: var(--panel-2); border: 1px solid var(--border-2); border-radius: 8px; color: var(--text); font-family: inherit; font-size: 13px; padding: 10px 12px; }
+.fb-text { resize: vertical; min-height: 76px; margin-bottom: 10px; }
+.fb-email { margin-bottom: 14px; }
+.fb-text:focus, .fb-email:focus { outline: none; border-color: var(--accent); }
+.fb-status { font-size: 12.5px; margin-top: 10px; min-height: 16px; }
+.fb-status.ok { color: var(--good); }
+.fb-status.err { color: #ff6b6b; }
