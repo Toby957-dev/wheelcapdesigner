@@ -503,6 +503,17 @@ function stlBlob(geo) {
 function download(blob, name) {
   const url = URL.createObjectURL(blob); const a = document.createElement('a');
   a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
+  showToast('✓ ' + name + ' heruntergeladen');
+}
+
+// Kurze Bestätigung bei jedem Download (jedes Mal, nicht nur einmal pro Sitzung).
+let toastEl = null, toastTimer = null;
+function showToast(msg) {
+  if (!toastEl) { toastEl = document.createElement('div'); toastEl.className = 'toast'; document.body.appendChild(toastEl); }
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
 }
 
 // ---- Ko-fi ----

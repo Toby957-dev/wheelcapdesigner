@@ -359,3 +359,15 @@ input.ctl[type=text]:focus, select.ctl:focus { outline: none; border-color: var(
 .fb-status { font-size: 12.5px; margin-top: 10px; min-height: 16px; }
 .fb-status.ok { color: var(--good); }
 .fb-status.err { color: #ff6b6b; }
+
+/* ===== Download-Bestätigung (Toast) ===== */
+.toast {
+  position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 12px);
+  z-index: 120; pointer-events: none;
+  background: var(--panel); color: var(--text);
+  border: 1px solid var(--border); border-left: 3px solid var(--good);
+  border-radius: 10px; box-shadow: var(--shadow);
+  padding: 11px 16px; font-size: 13px; font-weight: 600; max-width: 90vw;
+  opacity: 0; transition: opacity .2s ease, transform .2s ease;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
