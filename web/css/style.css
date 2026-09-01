@@ -327,7 +327,7 @@ input.ctl[type=text]:focus, select.ctl:focus { outline: none; border-color: var(
 .mw-link { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; border: 1px solid var(--border-2); border-radius: var(--radius); background: var(--panel-2); transition: border-color .15s; }
 .mw-link:hover { border-color: var(--faint); }
 .mw-link img { height: 20px; width: auto; display: block; }
-.mw-link .mw-fallback-text { display: none; font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+.mw-link .mw-fallback-text { display: none; font-size: 13px; font-weight: 700; color: #ff6a13; white-space: nowrap; letter-spacing: .01em; }
 .mw-link.mw-fallback img { display: none; }
 .mw-link.mw-fallback .mw-fallback-text { display: inline; }
 @media (max-width: 720px) { .mw-link .mw-fallback-text { font-size: 0; } }

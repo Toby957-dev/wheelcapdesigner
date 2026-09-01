@@ -14,7 +14,7 @@ import { export3MF } from './threemf.js';
 const SUBMIT_EMAIL = 'vorlagen@example.com';
 
 // >>> HIER deinen MakerWorld-Profil-Link eintragen (dann erscheint der Button oben) <<<
-const MAKERWORLD_URL = '';   // z. B. 'https://makerworld.com/en/@deinname'
+const MAKERWORLD_URL = 'https://makerworld.com/de/models/3245007-wheelcap-designer#profileId-3676964';
 
 // Eindeutige, anonyme Kennung pro Browser (eine Stimme je Vorlage).
 function voterId() {
