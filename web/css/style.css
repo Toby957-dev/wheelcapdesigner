@@ -380,12 +380,30 @@ body.theme-light .brand#homeBtn:hover { background: rgba(20,30,50,.05); }
 .home-overlay {
   position: fixed; inset: 0; z-index: 200; display: none;
   align-items: center; justify-content: center; padding: 24px;
-  background: radial-gradient(circle at 50% 30%, #171b22, #0a0c10 78%);
-  overflow-y: auto;
+  background:
+    radial-gradient(760px 520px at 82% 24%, rgba(0,145,255,0.16), transparent 60%),
+    radial-gradient(circle at 50% 32%, #171b22, #0a0c10 80%);
+  overflow: hidden;
+}
+/* Nabendeckel-Blueprint als dezentes Hintergrundmotiv */
+.home-overlay::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: url('/home-bg.svg') no-repeat;
+  background-position: right -120px center;
+  background-size: auto 132%;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 42%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 42%);
 }
 .home-overlay.show { display: flex; }
-body.theme-light .home-overlay { background: radial-gradient(circle at 50% 30%, #ffffff, #dfe5ec 80%); }
+body.theme-light .home-overlay {
+  background:
+    radial-gradient(760px 520px at 82% 24%, rgba(0,120,230,0.12), transparent 60%),
+    radial-gradient(circle at 50% 32%, #ffffff, #dfe5ec 82%);
+}
+body.theme-light .home-overlay::before { opacity: 0.55; filter: brightness(0.55) saturate(1.3); }
 .home-card {
+  position: relative; z-index: 1;
   width: 100%; max-width: 560px; background: var(--panel); border: 1px solid var(--border);
   border-radius: 18px; box-shadow: var(--shadow); padding: 30px 28px 22px; margin: auto;
 }

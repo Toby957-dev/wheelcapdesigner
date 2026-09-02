@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="none">
+  <g stroke="#4aa3ff" stroke-width="1.4" opacity="0.9">
+    <!-- Zielkreuz -->
+    <line x1="360" y1="40" x2="360" y2="620" stroke-opacity="0.18"/>
+    <line x1="80" y1="330" x2="640" y2="330" stroke-opacity="0.18"/>
+    <!-- Konzentrische Ringe (Felge/Nabendeckel) -->
+    <circle cx="360" cy="330" r="270" stroke-opacity="0.35"/>
+    <circle cx="360" cy="330" r="248" stroke-opacity="0.20" stroke-dasharray="2 8"/>
+    <circle cx="360" cy="330" r="200" stroke-opacity="0.5"/>
+    <circle cx="360" cy="330" r="150" stroke-opacity="0.35"/>
+    <circle cx="360" cy="330" r="78" stroke-opacity="0.6"/>
+    <circle cx="360" cy="330" r="46" stroke-opacity="0.45"/>
+    <!-- Radbolzen -->
+    <g stroke-opacity="0.7">
+      <circle cx="360" cy="180" r="20"/>
+      <circle cx="360" cy="180" r="9"/>
+      <circle cx="502.7" cy="276.3" r="20"/>
+      <circle cx="502.7" cy="276.3" r="9"/>
+      <circle cx="448.2" cy="441.8" r="20"/>
+      <circle cx="448.2" cy="441.8" r="9"/>
+      <circle cx="271.8" cy="441.8" r="20"/>
+      <circle cx="271.8" cy="441.8" r="9"/>
+      <circle cx="217.3" cy="276.3" r="20"/>
+      <circle cx="217.3" cy="276.3" r="9"/>
+    </g>
+    <!-- Teilungsstriche außen -->
+    <g stroke-opacity="0.3">
+      <line x1="360" y1="60" x2="360" y2="82"/>
+      <line x1="360" y1="578" x2="360" y2="600"/>
+      <line x1="90" y1="330" x2="112" y2="330"/>
+      <line x1="608" y1="330" x2="630" y2="330"/>
+      <line x1="168" y1="138" x2="184" y2="154"/>
+      <line x1="536" y1="522" x2="552" y2="538"/>
+      <line x1="552" y1="138" x2="536" y2="154"/>
+      <line x1="184" y1="522" x2="168" y2="538"/>
+    </g>
+    <!-- Maßlinie -->
+    <g stroke-opacity="0.28">
+      <line x1="360" y1="330" x2="630" y2="330" stroke-dasharray="4 5"/>
+      <line x1="614" y1="322" x2="630" y2="330"/>
+      <line x1="614" y1="338" x2="630" y2="330"/>
+    </g>
+  </g>
+</svg>
