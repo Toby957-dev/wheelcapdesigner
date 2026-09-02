@@ -7,6 +7,7 @@ import { DEFAULTS, GROUPS } from './config.js';
 import { BRAND_LIBRARY, GENERIC } from './brands.js';
 import { loadUserPresets, saveUserPreset, deleteUserPreset, proposalJSON } from './userPresets.js';
 import { loadProjects, saveProject, updateProject, deleteProject } from './projects.js';
+import { t, getLang, setLang, LANGS, FLAGS, applyHtmlLang } from './i18n.js';
 import { supabaseEnabled, fetchCommunityGroup, submitProposal, rateTemplate, submitFeedback } from './supabase.js';
 import { buildCap, derive, initGeometry } from './geometry.js';
 import { svgToGeometry, textToGeometry, shapeToGeometry } from './logo.js';
@@ -142,19 +143,19 @@ function fmt(v, step) { const dec = (String(step).split('.')[1] || '').length; r
 function makeControl(meta) {
   const wrap = document.createElement('div'); wrap.className = 'control'; controlEls[meta.key] = wrap;
   if (meta.type === 'select') {
-    wrap.innerHTML = `<div class="row"><label>${meta.label}</label></div>`;
+    wrap.innerHTML = `<div class="row"><label>${t(meta.label)}</label></div>`;
     const sel = document.createElement('select'); sel.className = 'ctl';
-    for (const o of meta.options) sel.innerHTML += `<option value="${o.value}">${o.label}</option>`;
+    for (const o of meta.options) sel.innerHTML += `<option value="${o.value}">${t(o.label)}</option>`;
     sel.value = state[meta.key];
     sel.addEventListener('change', () => { state[meta.key] = sel.value; onParamChange(true); });
     wrap.appendChild(sel); inputs[meta.key] = sel;
   } else if (meta.type === 'text') {
-    wrap.innerHTML = `<div class="row"><label>${meta.label}</label></div>`;
+    wrap.innerHTML = `<div class="row"><label>${t(meta.label)}</label></div>`;
     const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'ctl'; inp.value = state[meta.key];
     inp.addEventListener('input', () => { state[meta.key] = inp.value; onParamChange(false); });
     wrap.appendChild(inp); inputs[meta.key] = inp;
   } else if (meta.type === 'color') {
-    wrap.innerHTML = `<div class="row"><label>${meta.label}</label></div>`;
+    wrap.innerHTML = `<div class="row"><label>${t(meta.label)}</label></div>`;
     const cr = document.createElement('div'); cr.className = 'color-row';
     const inp = document.createElement('input'); inp.type = 'color'; inp.className = 'ctl-color'; inp.value = state[meta.key];
     const hexInp = document.createElement('input'); hexInp.type = 'text'; hexInp.className = 'hex-input'; hexInp.value = state[meta.key]; hexInp.maxLength = 7; hexInp.spellcheck = false;
@@ -166,7 +167,7 @@ function makeControl(meta) {
     hexInp.addEventListener('blur', () => { hexInp.value = state[meta.key]; });
     cr.append(inp, hexInp); wrap.appendChild(cr); inputs[meta.key] = inp;
   } else {
-    wrap.innerHTML = `<div class="row"><label>${meta.label}</label><span class="valedit"><input type="number" class="num-input" min="${meta.min}" max="${meta.max}" step="${meta.step}"><span class="u">${meta.unit || ''}</span></span></div>`;
+    wrap.innerHTML = `<div class="row"><label>${t(meta.label)}</label><span class="valedit"><input type="number" class="num-input" min="${meta.min}" max="${meta.max}" step="${meta.step}"><span class="u">${meta.unit || ''}</span></span></div>`;
     const numInp = wrap.querySelector('.num-input'); numInp.value = fmt(state[meta.key], meta.step);
     const rw = document.createElement('div'); rw.className = 'range-wrap';
     const inp = document.createElement('input');
@@ -186,7 +187,7 @@ function makeControl(meta) {
     numInp.addEventListener('blur', () => { numInp.value = fmt(state[meta.key], meta.step); });
     wrap.appendChild(rw); inputs[meta.key] = inp;
   }
-  if (meta.hint) wrap.insertAdjacentHTML('beforeend', `<div class="hint">${meta.hint}</div>`);
+  if (meta.hint) wrap.insertAdjacentHTML('beforeend', `<div class="hint">${t(meta.hint)}</div>`);
   return wrap;
 }
 
@@ -195,16 +196,16 @@ function makeLogoSourceControls() {
   const frag = document.createDocumentFragment();
 
   const libWrap = document.createElement('div'); libWrap.className = 'control'; controlEls['logoLibrary'] = libWrap;
-  libWrap.innerHTML = `<div class="row"><label>Bibliothek</label></div>`;
+  libWrap.innerHTML = `<div class="row"><label>${t('Bibliothek')}</label></div>`;
   const libSel = document.createElement('select'); libSel.className = 'ctl';
-  libSel.innerHTML = `<option value="">— auswählen —</option>` + LOGO_LIBRARY.map((l, i) => `<option value="${i}">${l.label}</option>`).join('');
+  libSel.innerHTML = `<option value="">${t('— auswählen —')}</option>` + LOGO_LIBRARY.map((l, i) => `<option value="${i}">${l.label}</option>`).join('');
   libSel.addEventListener('change', async () => {
     if (libSel.value === '') return;
     const item = LOGO_LIBRARY[+libSel.value];
     try {
       logoSvgText = await (await fetch(item.file)).text();
       logoFileName = item.label; setFileName(item.label); onParamChange(true);
-    } catch { showWarn('Bibliotheks-Logo konnte nicht geladen werden.'); }
+    } catch { showWarn(t('Bibliotheks-Logo konnte nicht geladen werden.')); }
   });
   libWrap.appendChild(libSel); frag.appendChild(libWrap);
 
@@ -212,7 +213,7 @@ function makeLogoSourceControls() {
   fileWrap.innerHTML = `
     <label class="filebtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0l-4 4m4-4l4 4M5 20h14"/></svg>
-      <span>Eigenes SVG hochladen</span>
+      <span>${t('Eigenes SVG hochladen')}</span>
       <input type="file" accept=".svg,image/svg+xml" style="display:none">
     </label>
     <div class="filename" style="display:none"></div>`;
@@ -230,19 +231,20 @@ function setFileName(name) {
 }
 
 function findMeta(key) { for (const g of GROUPS) for (const m of g.params) if (m.key === key) return m; return { step: 1 }; }
+function uiLocale() { return ({ de: 'de-DE', en: 'en-GB', fr: 'fr-FR', es: 'es-ES', it: 'it-IT' })[getLang()] || 'de-DE'; }
 
 // ============ Projekt-Sektion ============
 function buildProjectSection(root) {
   const sec = document.createElement('div'); sec.className = 'section';
   const folder = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
-  sec.innerHTML = `<div class="section-head"><span class="ico">${folder}</span><h2>Projekt</h2><span class="chev"></span></div>`;
+  sec.innerHTML = `<div class="section-head"><span class="ico">${folder}</span><h2>${t('Projekt')}</h2><span class="chev"></span></div>`;
   const body = document.createElement('div'); body.className = 'section-body';
 
   const saveRow = document.createElement('div'); saveRow.className = 'proj-save-row';
-  const nameInp = document.createElement('input'); nameInp.type = 'text'; nameInp.className = 'ctl'; nameInp.placeholder = 'Projektname';
+  const nameInp = document.createElement('input'); nameInp.type = 'text'; nameInp.className = 'ctl'; nameInp.placeholder = t('Projektname');
   nameInp.value = currentProjectName || '';
-  const saveBtn = document.createElement('button'); saveBtn.className = 'btn btn-ghost btn-sm'; saveBtn.textContent = 'Speichern';
-  saveBtn.addEventListener('click', () => { saveProjectToBrowser(nameInp.value); nameInp.value = currentProjectName; flash(saveBtn, 'Gespeichert ✓'); });
+  const saveBtn = document.createElement('button'); saveBtn.className = 'btn btn-ghost btn-sm'; saveBtn.textContent = t('Speichern');
+  saveBtn.addEventListener('click', () => { saveProjectToBrowser(nameInp.value); nameInp.value = currentProjectName; flash(saveBtn, t('Gespeichert ✓')); });
   saveRow.append(nameInp, saveBtn); body.appendChild(saveRow);
   projNameInput = nameInp;
 
@@ -250,14 +252,14 @@ function buildProjectSection(root) {
   const dl = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14"/></svg>';
   const op = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
   const nw = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
-  const fileBtn = document.createElement('button'); fileBtn.className = 'btn btn-ghost'; fileBtn.innerHTML = dl + ' Als Datei';
-  const openBtn = document.createElement('button'); openBtn.className = 'btn btn-ghost'; openBtn.innerHTML = op + ' Öffnen';
-  const newBtn = document.createElement('button'); newBtn.className = 'btn btn-ghost proj-full'; newBtn.innerHTML = nw + ' Neues Projekt';
+  const fileBtn = document.createElement('button'); fileBtn.className = 'btn btn-ghost'; fileBtn.innerHTML = dl + ' ' + t('Als Datei');
+  const openBtn = document.createElement('button'); openBtn.className = 'btn btn-ghost'; openBtn.innerHTML = op + ' ' + t('Öffnen');
+  const newBtn = document.createElement('button'); newBtn.className = 'btn btn-ghost proj-full'; newBtn.innerHTML = nw + ' ' + t('Neues Projekt');
   fileBtn.addEventListener('click', saveProjectFile);
   openBtn.addEventListener('click', () => openProjectFile(() => { if (projNameInput) projNameInput.value = currentProjectName; }));
   newBtn.addEventListener('click', () => { newProject(); if (projNameInput) projNameInput.value = ''; });
   acts.append(fileBtn, openBtn, newBtn); body.appendChild(acts);
-  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">„Als Datei" = .wcd zum Sichern/Teilen · „Speichern" legt es in diesem Browser ab.</div>`);
+  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">${t('„Als Datei" = .wcd zum Sichern/Teilen · „Speichern" legt es in diesem Browser ab.')}</div>`);
 
   sec.appendChild(body);
   sec.querySelector('.section-head').addEventListener('click', () => sec.classList.toggle('collapsed'));
@@ -267,7 +269,7 @@ function buildProjectSection(root) {
 // ============ Vorlagen ============
 function buildLibrarySection(root) {
   const sec = document.createElement('div'); sec.className = 'section';
-  sec.innerHTML = `<div class="section-head"><span class="ico">${ICONS.book}</span><h2>Vorlagen</h2><span class="chev"></span></div>`;
+  sec.innerHTML = `<div class="section-head"><span class="ico">${ICONS.book}</span><h2>${t('Vorlagen')}</h2><span class="chev"></span></div>`;
   const body = document.createElement('div'); body.className = 'section-body';
 
   const brandSel = document.createElement('select'); brandSel.className = 'ctl';
@@ -275,9 +277,9 @@ function buildLibrarySection(root) {
 
   function populateBrands() {
     const prev = brandSel.value;
-    brandSel.innerHTML = `<option value="generic">Allgemeine Größen</option>`;
+    brandSel.innerHTML = `<option value="generic">${t('Allgemeine Größen')}</option>`;
     for (const grp of library) {
-      let og = `<optgroup label="${grp.group}">`;
+      let og = `<optgroup label="${t(grp.group)}">`;
       grp.brands.forEach((b, i) => { og += `<option value="${grp.group}::${i}">${b.name}</option>`; });
       brandSel.innerHTML += og + `</optgroup>`;
     }
@@ -290,14 +292,14 @@ function buildLibrarySection(root) {
     const grp = library.find(g => g.group === group);
     return grp ? grp.brands[+i].entries : [];
   }
-  function fillSizes() { sizeSel.innerHTML = entriesFor(brandSel.value).map((e, i) => `<option value="${i}">${e.label}</option>`).join(''); }
+  function fillSizes() { sizeSel.innerHTML = entriesFor(brandSel.value).map((e, i) => `<option value="${i}">${t(e.label)}</option>`).join(''); }
   function currentEntry() { return entriesFor(brandSel.value)[+sizeSel.value]; }
   brandSel.addEventListener('change', () => { fillSizes(); applyValues(entriesFor(brandSel.value)[0].values); updateRateBox(); });
   sizeSel.addEventListener('change', () => { applyValues(currentEntry().values); updateRateBox(); });
   populateBrands(); fillSizes();
 
-  const l1 = document.createElement('div'); l1.className = 'sub-label'; l1.textContent = 'Hersteller';
-  const l2 = document.createElement('div'); l2.className = 'sub-label'; l2.textContent = 'Größe / Modell'; l2.style.marginTop = '10px';
+  const l1 = document.createElement('div'); l1.className = 'sub-label'; l1.textContent = t('Hersteller');
+  const l2 = document.createElement('div'); l2.className = 'sub-label'; l2.textContent = t('Größe / Modell'); l2.style.marginTop = '10px';
   body.append(l1, brandSel, l2, sizeSel);
 
   // Bewertung – nur für Community-Vorlagen (haben eine id).
@@ -308,40 +310,40 @@ function buildLibrarySection(root) {
     const e = currentEntry();
     if (!e || e.id == null) { rateBox.style.display = 'none'; return; }
     rateBox.style.display = '';
-    rateBox.innerHTML = `<div class="tr-head">Passt diese Vorlage?</div><div class="tr-row"><span class="stars"></span><span class="tr-avg"></span></div>`;
+    rateBox.innerHTML = `<div class="tr-head">${t('Passt diese Vorlage?')}</div><div class="tr-row"><span class="stars"></span><span class="tr-avg"></span></div>`;
     const starsEl = rateBox.querySelector('.stars');
     const avgEl = rateBox.querySelector('.tr-avg');
     const mine = myVote(e.id);
     const showAvg = () => {
       const r = e.rating || { avg: 0, votes: 0 };
-      avgEl.innerHTML = r.votes ? `Ø <b>${r.avg.toFixed(1)}</b> (${r.votes})` : 'Noch keine Bewertung';
+      avgEl.innerHTML = r.votes ? `Ø <b>${r.avg.toFixed(1)}</b> (${r.votes})` : t('Noch keine Bewertung');
     };
     buildStars(starsEl, mine || Math.round((e.rating && e.rating.avg) || 0), async (n) => {
-      if (!supabaseEnabled()) { avgEl.textContent = 'Bewerten aktuell nicht möglich'; return; }
-      setMyVote(e.id, n); buildStars(starsEl, n, null); avgEl.innerHTML = '<span class="tr-thanks">Danke! ✓</span>';
+      if (!supabaseEnabled()) { avgEl.textContent = t('Bewerten aktuell nicht möglich'); return; }
+      setMyVote(e.id, n); buildStars(starsEl, n, null); avgEl.innerHTML = `<span class="tr-thanks">${t('Danke! ✓')}</span>`;
       const res = await rateTemplate(e.id, n, voterId());
       if (res.ok && res.summary) { e.rating = res.summary; showAvg(); }
     });
     showAvg();
   }
 
-  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">Richtwerte – bitte am Rad nachmessen.</div>`);
+  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">${t('Richtwerte – bitte am Rad nachmessen.')}</div>`);
 
-  body.insertAdjacentHTML('beforeend', `<div class="divider"></div><div class="sub-label">Eigene Maße speichern</div>`);
+  body.insertAdjacentHTML('beforeend', `<div class="divider"></div><div class="sub-label">${t('Eigene Maße speichern')}</div>`);
   const saveRow = document.createElement('div'); saveRow.className = 'save-row';
-  const nameInp = document.createElement('input'); nameInp.type = 'text'; nameInp.className = 'ctl'; nameInp.placeholder = 'z. B. Meine Felge 18 Zoll';
-  const saveBtn = document.createElement('button'); saveBtn.className = 'btn btn-ghost btn-sm'; saveBtn.textContent = 'Speichern';
+  const nameInp = document.createElement('input'); nameInp.type = 'text'; nameInp.className = 'ctl'; nameInp.placeholder = t('z. B. Meine Felge 18 Zoll');
+  const saveBtn = document.createElement('button'); saveBtn.className = 'btn btn-ghost btn-sm'; saveBtn.textContent = t('Speichern');
   saveRow.append(nameInp, saveBtn); body.appendChild(saveRow);
   const myList = document.createElement('div'); myList.className = 'preset-list'; body.appendChild(myList);
 
   function renderMy() {
     const list = loadUserPresets(); myList.innerHTML = '';
-    if (!list.length) { myList.innerHTML = `<div class="hint">Noch keine eigenen Vorlagen.</div>`; return; }
+    if (!list.length) { myList.innerHTML = `<div class="hint">${t('Noch keine eigenen Vorlagen.')}</div>`; return; }
     for (const p of list) {
       const row = document.createElement('div'); row.className = 'preset-row';
       row.innerHTML = `<span class="pr-name"></span>`;
       row.querySelector('.pr-name').textContent = p.label;
-      const apply = document.createElement('button'); apply.className = 'pr-btn'; apply.textContent = 'Anwenden';
+      const apply = document.createElement('button'); apply.className = 'pr-btn'; apply.textContent = t('Anwenden');
       const del = document.createElement('button'); del.className = 'pr-btn pr-del'; del.innerHTML = '&times;';
       apply.addEventListener('click', () => applyValues(p.values));
       del.addEventListener('click', () => { deleteUserPreset(p.id); renderMy(); });
@@ -349,15 +351,15 @@ function buildLibrarySection(root) {
     }
   }
   saveBtn.addEventListener('click', () => {
-    const label = nameInp.value.trim() || `Vorlage ${new Date().toLocaleDateString('de-DE')}`;
-    saveUserPreset(label, snapshot()); nameInp.value = ''; renderMy(); flash(saveBtn, 'Gespeichert ✓');
+    const label = nameInp.value.trim() || `${t('Vorlage')} ${new Date().toLocaleDateString(uiLocale())}`;
+    saveUserPreset(label, snapshot()); nameInp.value = ''; renderMy(); flash(saveBtn, t('Gespeichert ✓'));
   });
   renderMy();
 
   const propBtn = document.createElement('button'); propBtn.className = 'btn btn-ghost btn-block';
-  propBtn.style.marginTop = '10px'; propBtn.textContent = 'Als Vorlage vorschlagen';
+  propBtn.style.marginTop = '10px'; propBtn.textContent = t('Als Vorlage vorschlagen');
   propBtn.addEventListener('click', proposeCurrent); body.appendChild(propBtn);
-  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:6px">Hilft, die Bibliothek für alle zu füllen.</div>`);
+  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:6px">${t('Hilft, die Bibliothek für alle zu füllen.')}</div>`);
 
   sec.appendChild(body);
   sec.querySelector('.section-head').addEventListener('click', () => sec.classList.toggle('collapsed'));
@@ -375,15 +377,15 @@ function snapshot() {
 async function proposeCurrent() {
   const s = snapshot(); const label = `${s.outerDiameter} / ${s.mountDiameter} mm`;
   if (supabaseEnabled()) {
-    showWarn('Sende Vorschlag …');
+    showWarn(t('Sende Vorschlag …'));
     const r = await submitProposal({ ...s, label });
-    showWarn(r.ok ? 'Danke! Vorschlag eingereicht – wird nach Prüfung aufgenommen.' : 'Konnte nicht senden: ' + ((r.error && r.error.message) || r.reason || 'Fehler'));
+    showWarn(r.ok ? t('Danke! Vorschlag eingereicht – wird nach Prüfung aufgenommen.') : t('Konnte nicht senden: ') + ((r.error && r.error.message) || r.reason || t('Fehler')));
     return;
   }
   const json = proposalJSON(label, s);
   try { await navigator.clipboard.writeText(json); } catch {}
   window.open(`mailto:${SUBMIT_EMAIL}?subject=${encodeURIComponent('Nabendeckel-Vorlage: ' + label)}&body=${encodeURIComponent('Neue Vorlage (bitte prüfen):\n\n' + json)}`, '_blank');
-  showWarn('Maße kopiert – E-Mail-Fenster geöffnet.');
+  showWarn(t('Maße kopiert – E-Mail-Fenster geöffnet.'));
 }
 function flash(btn, txt) { const o = btn.textContent; btn.textContent = txt; setTimeout(() => btn.textContent = o, 1200); }
 function applyValues(values) { Object.assign(state, values); syncInputs(); onParamChange(true); }
@@ -423,24 +425,24 @@ function openProjectFile(then) {
       applyProjectPayload(p);
       currentProjectId = null;
       currentProjectName = f.name.replace(/\.(wcd|json)$/i, '');
-      showToast('✓ Projekt geöffnet: ' + currentProjectName);
+      showToast(t('✓ Projekt geöffnet: ') + currentProjectName);
       if (then) then();
-    } catch (e) { showToast('⚠ Datei konnte nicht geöffnet werden'); }
+    } catch (e) { showToast(t('⚠ Datei konnte nicht geöffnet werden')); }
   };
   inp.click();
 }
 function saveProjectToBrowser(name) {
-  const nm = (name || currentProjectName || '').trim() || ('Projekt ' + new Date().toLocaleString('de-DE'));
+  const nm = (name || currentProjectName || '').trim() || (t('Projekt') + ' ' + new Date().toLocaleString(uiLocale()));
   const payload = buildProjectPayload();
   if (currentProjectId) { updateProject(currentProjectId, nm, payload); }
   else { const rec = saveProject(nm, payload); currentProjectId = rec.id; }
   currentProjectName = nm;
   renderHomeList();
-  showToast('✓ Projekt gespeichert: ' + nm);
+  showToast(t('✓ Projekt gespeichert: ') + nm);
 }
 function openBrowserProject(rec) {
-  try { applyProjectPayload(rec.payload); currentProjectId = rec.id; currentProjectName = rec.name; showToast('✓ Projekt geöffnet: ' + rec.name); }
-  catch (e) { showToast('⚠ Projekt beschädigt'); }
+  try { applyProjectPayload(rec.payload); currentProjectId = rec.id; currentProjectName = rec.name; showToast(t('✓ Projekt geöffnet: ') + rec.name); }
+  catch (e) { showToast(t('⚠ Projekt beschädigt')); }
 }
 
 // ============ Startseite ============
@@ -450,16 +452,16 @@ function renderHomeList() {
   const list = document.getElementById('homeList'); if (!list) return;
   const projs = loadProjects();
   list.innerHTML = '';
-  if (!projs.length) { list.innerHTML = '<div class="empty">Noch keine gespeicherten Projekte. Speichere im Designer über „Projekt".</div>'; return; }
+  if (!projs.length) { list.innerHTML = `<div class="empty">${t('Noch keine gespeicherten Projekte. Speichere im Designer über „Projekt".')}</div>`; return; }
   for (const rec of projs) {
     const row = document.createElement('div'); row.className = 'home-row';
     const main = document.createElement('div'); main.className = 'hr-main';
     const nm = document.createElement('div'); nm.className = 'hr-name'; nm.textContent = rec.name;
     const dt = document.createElement('div'); dt.className = 'hr-date';
-    dt.textContent = new Date(rec.savedAt).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+    dt.textContent = new Date(rec.savedAt).toLocaleString(uiLocale(), { dateStyle: 'medium', timeStyle: 'short' });
     main.append(nm, dt);
-    const open = document.createElement('button'); open.className = 'hr-open'; open.textContent = 'Öffnen';
-    const del = document.createElement('button'); del.className = 'hr-del'; del.innerHTML = '&times;'; del.title = 'Löschen';
+    const open = document.createElement('button'); open.className = 'hr-open'; open.textContent = t('Öffnen');
+    const del = document.createElement('button'); del.className = 'hr-del'; del.innerHTML = '&times;'; del.title = t('Löschen');
     const doOpen = () => { openBrowserProject(rec); hideHome(); };
     main.addEventListener('click', doOpen);
     open.addEventListener('click', doOpen);
@@ -485,7 +487,7 @@ function buildUI() {
 
   for (const g of GROUPS) {
     const sec = document.createElement('div'); sec.className = 'section'; sec.dataset.group = g.id;
-    sec.innerHTML = `<div class="section-head"><span class="ico">${ICONS[g.icon] || ''}</span><h2>${g.label}</h2><span class="chev"></span></div>`;
+    sec.innerHTML = `<div class="section-head"><span class="ico">${ICONS[g.icon] || ''}</span><h2>${t(g.label)}</h2><span class="chev"></span></div>`;
     const body = document.createElement('div'); body.className = 'section-body';
     for (const meta of g.params) {
       body.appendChild(makeControl(meta));
@@ -506,14 +508,14 @@ function buildUI() {
 
 function buildExportSection(root) {
   const sec = document.createElement('div'); sec.className = 'section';
-  sec.innerHTML = `<div class="section-head"><span class="ico">${ICONS.palette}</span><h2>Export</h2><span class="chev"></span></div>`;
+  sec.innerHTML = `<div class="section-head"><span class="ico">${ICONS.palette}</span><h2>${t('Export')}</h2><span class="chev"></span></div>`;
   const body = document.createElement('div'); body.className = 'section-body';
-  const b1 = document.createElement('button'); b1.className = 'btn btn-ghost btn-block'; b1.textContent = 'STL herunterladen';
+  const b1 = document.createElement('button'); b1.className = 'btn btn-ghost btn-block'; b1.textContent = t('STL herunterladen');
   b1.addEventListener('click', downloadSTL);
-  const b2 = document.createElement('button'); b2.className = 'btn btn-ghost btn-block'; b2.style.marginTop = '8px'; b2.textContent = '3MF · mit Farben (Bambu Studio)';
+  const b2 = document.createElement('button'); b2.className = 'btn btn-ghost btn-block'; b2.style.marginTop = '8px'; b2.textContent = t('3MF · mit Farben (Bambu Studio)');
   b2.addEventListener('click', download3MF);
   body.append(b1, b2);
-  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">Eine Datei, beide Teile korrekt positioniert. <b>3MF</b> enthält die Farben – Bambu Studio erkennt Deckel + Logo als getrennte Objekte. STL ist farblos (Teile lassen sich im Slicer trennen).</div>`);
+  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">${t('Eine Datei, beide Teile korrekt positioniert. <b>3MF</b> enthält die Farben – Bambu Studio erkennt Deckel + Logo als getrennte Objekte. STL ist farblos (Teile lassen sich im Slicer trennen).')}</div>`);
   sec.appendChild(body);
   sec.querySelector('.section-head').addEventListener('click', () => sec.classList.toggle('collapsed'));
   root.appendChild(sec);
@@ -559,10 +561,10 @@ function onParamChange(immediate) { updateVisibility(); clearTimeout(rebuildTime
 
 function checkWarnings() {
   const msgs = [];
-  if (state.outerDiameter <= state.mountDiameter) msgs.push('Außen-Ø muss größer als Montage-Ø sein.');
+  if (state.outerDiameter <= state.mountDiameter) msgs.push(t('Außen-Ø muss größer als Montage-Ø sein.'));
   const d = derive(state);
-  if (d.clipW < 4) msgs.push('Zu viele/zu breite Clips.');
-  if (state.gripThickness + state.barbRamp > d.skirtH) msgs.push('Klemmdicke + Einführschräge > Clip-Länge.');
+  if (d.clipW < 4) msgs.push(t('Zu viele/zu breite Clips.'));
+  if (state.gripThickness + state.barbRamp > d.skirtH) msgs.push(t('Klemmdicke + Einführschräge > Clip-Länge.'));
   if (msgs.length) { warnEl.textContent = '⚠ ' + msgs.join('  ·  '); warnEl.classList.add('show'); }
   else warnEl.classList.remove('show');
 }
@@ -615,8 +617,8 @@ function updateBadge(body, logoGeo) {
   const vol = (meshVolume(body) + (logoGeo ? meshVolume(logoGeo) : 0)) / 1000;
   badgeEl.innerHTML =
     `<span>Ø <b>${dia.toFixed(1)}</b> mm</span><span class="sep"></span>` +
-    `<span>Höhe <b>${s.y.toFixed(1)}</b> mm</span><span class="sep"></span>` +
-    `<span>Material <b>${vol.toFixed(1)}</b> cm³</span>`;
+    `<span>${t('Höhe')} <b>${s.y.toFixed(1)}</b> mm</span><span class="sep"></span>` +
+    `<span>${t('Material')} <b>${vol.toFixed(1)}</b> cm³</span>`;
 }
 
 // ============ Export ============
@@ -629,7 +631,7 @@ function stlBlob(geo) {
 function download(blob, name) {
   const url = URL.createObjectURL(blob); const a = document.createElement('a');
   a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
-  showToast('✓ ' + name + ' heruntergeladen');
+  showToast('✓ ' + name + ' ' + t('heruntergeladen'));
 }
 
 // Kurze Bestätigung bei jedem Download (jedes Mal, nicht nur einmal pro Sitzung).
@@ -650,7 +652,7 @@ function initKofi() {
   s.src = 'https://storage.ko-fi.com/cdn/widget/Widget_2.js';
   s.onload = () => {
     try {
-      window.kofiwidget2.init(KOFI.text, KOFI.color, KOFI.id);
+      window.kofiwidget2.init(t(KOFI.text), KOFI.color, KOFI.id);
       kofiHTML = window.kofiwidget2.getHTML();
       const top = document.getElementById('kofiTop'); if (top) top.innerHTML = kofiHTML;
     } catch (e) { console.warn('Ko-fi:', e); }
@@ -695,7 +697,7 @@ function downloadSTL() {
 
 function download3MF() {
   if (!capMesh) return;
-  const parts = [{ geometry: capExportGeo(), color: state.capColor, name: 'Deckel' }];
+  const parts = [{ geometry: capExportGeo(), color: state.capColor, name: t('Deckel') }];
   if (logoMesh && logoMesh.visible) parts.push({ geometry: logoExportGeo(), color: state.logoColor, name: 'Logo' });
   download(export3MF(parts), baseName() + '.3mf');
   showDownloadPopup();
@@ -728,7 +730,7 @@ function setupFeedback() {
   const close = () => modal.classList.remove('show');
   const open = () => {
     picked = 0; textEl.value = ''; emailEl.value = ''; st.textContent = ''; st.className = 'fb-status';
-    sendBtn.disabled = false; sendBtn.textContent = 'Feedback senden';
+    sendBtn.disabled = false; sendBtn.textContent = t('Feedback senden');
     renderStars(); modal.classList.add('show');
   };
   document.getElementById('feedbackBtn').addEventListener('click', open);
@@ -736,19 +738,81 @@ function setupFeedback() {
   modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
   sendBtn.addEventListener('click', async () => {
     const message = textEl.value.trim();
-    if (!picked && !message) { st.className = 'fb-status err'; st.textContent = 'Bitte Sterne oder eine Nachricht angeben.'; return; }
-    if (!supabaseEnabled()) { st.className = 'fb-status err'; st.textContent = 'Feedback ist gerade nicht verfügbar.'; return; }
-    sendBtn.disabled = true; sendBtn.textContent = 'Sende …';
+    if (!picked && !message) { st.className = 'fb-status err'; st.textContent = t('Bitte Sterne oder eine Nachricht angeben.'); return; }
+    if (!supabaseEnabled()) { st.className = 'fb-status err'; st.textContent = t('Feedback ist gerade nicht verfügbar.'); return; }
+    sendBtn.disabled = true; sendBtn.textContent = t('Sende …');
     const r = await submitFeedback({ rating: picked, message, email: emailEl.value.trim() });
-    if (r.ok) { st.className = 'fb-status ok'; st.textContent = 'Danke für dein Feedback! 🙌'; setTimeout(close, 1400); }
-    else { st.className = 'fb-status err'; st.textContent = 'Konnte nicht senden: ' + ((r.error && r.error.message) || r.reason || 'Fehler'); sendBtn.disabled = false; sendBtn.textContent = 'Feedback senden'; }
+    if (r.ok) { st.className = 'fb-status ok'; st.textContent = t('Danke für dein Feedback! 🙌'); setTimeout(close, 1400); }
+    else { st.className = 'fb-status err'; st.textContent = t('Konnte nicht senden: ') + ((r.error && r.error.message) || r.reason || t('Fehler')); sendBtn.disabled = false; sendBtn.textContent = t('Feedback senden'); }
   });
+}
+
+// ============ Sprache (i18n) ============
+function setBtnText(btn, txt) {
+  if (!btn) return;
+  const svg = btn.querySelector('svg');
+  btn.textContent = '';
+  if (svg) { btn.appendChild(svg); btn.appendChild(document.createTextNode(' ' + txt)); }
+  else btn.textContent = txt;
+}
+function setText(sel, txt) { const el = document.querySelector(sel); if (el) el.textContent = txt; }
+function setAttr(sel, attr, val) { const el = document.querySelector(sel); if (el) el.setAttribute(attr, val); }
+
+function setupI18nStatic() {
+  applyHtmlLang();
+  // Topbar
+  setText('.brand p', t('Maße einstellen · Logo wählen · als STL / 3MF herunterladen'));
+  setText('#modeToggle button[data-mode="standard"]', t('Standard'));
+  setText('#modeToggle button[data-mode="expert"]', t('Experte'));
+  setBtnText(document.getElementById('download'), t('STL herunterladen'));
+  setAttr('#feedbackBtn', 'title', t('Feedback geben')); setAttr('#feedbackBtn', 'aria-label', t('Feedback geben'));
+  setAttr('#themeToggle', 'title', t('Hell/Dunkel umschalten')); setAttr('#themeToggle', 'aria-label', t('Hell/Dunkel umschalten'));
+  setAttr('#homeBtn', 'title', t('Zur Startseite'));
+  // Stage
+  setText('.hintbar', t('Linksklick: drehen · Rechtsklick: verschieben · Scrollen: zoomen'));
+  const stSpan = document.querySelector('#status span:last-child'); if (stSpan) stSpan.textContent = t('berechne…');
+  setText('#fatal h3', t('Konnte nicht laden'));
+  setText('#fatal p', t('Die 3D-Bibliothek konnte nicht geladen werden (Internetverbindung nötig).'));
+  // Download-Popup
+  setText('#dlModal h3', t('Dein Nabendeckel wird geladen …'));
+  setText('#dlModal p', t('Wenn dir WheelCapDesigner gefällt, freue ich mich riesig über einen Kaffee. Danke! 🙌'));
+  setText('#dlContinue', t('Weiter zum Designen'));
+  // Feedback
+  setText('#fbModal h3', t('Feedback zum Designer'));
+  setText('#fbModal p', t('Wie gefällt dir WheelCapDesigner? Über Sterne und ein paar Worte freue ich mich sehr.'));
+  setAttr('#fbText', 'placeholder', t('Was läuft gut, was fehlt dir?'));
+  setAttr('#fbEmail', 'placeholder', t('E-Mail (optional, für Rückfragen)'));
+  setText('#fbSend', t('Feedback senden'));
+  // Startseite
+  setText('.home-brand p', t('Nabendeckel selbst gestalten – Maße, Logo, 3D-Vorschau, STL/3MF'));
+  setText('#homeNew .ht-t', t('Neues Projekt'));
+  setText('#homeNew .ht-s', t('Leer mit Standardmaßen starten'));
+  setText('#homeOpen .ht-t', t('Projekt öffnen'));
+  setText('#homeOpen .ht-s', t('.wcd-Datei vom Rechner laden'));
+  setText('.home-recent-head span:first-child', t('Gespeicherte Projekte'));
+  setText('.home-recent-head span:last-child', t('in diesem Browser'));
+  setText('#homeContinue', t('Aktuelles Projekt weiter bearbeiten →'));
+}
+
+function setupLangSwitcher() {
+  const row = document.getElementById('langRow'); if (!row) return;
+  const cur = getLang();
+  row.innerHTML = '';
+  for (const l of LANGS) {
+    const b = document.createElement('button');
+    b.className = 'lang-btn' + (l.code === cur ? ' active' : '');
+    b.type = 'button'; b.title = l.name; b.setAttribute('aria-label', l.name);
+    b.innerHTML = `<span class="flag">${FLAGS[l.code]}</span>`;
+    b.addEventListener('click', () => { if (l.code === getLang()) return; setLang(l.code); location.reload(); });
+    row.appendChild(b);
+  }
 }
 
 // ============ Start ============
 try {
   initThree(); buildUI(); initGeometry(); rebuild();
   setupDownloadPopup(); initKofi(); setupMakerWorld(); setupFeedback();
+  setupI18nStatic(); setupLangSwitcher();
   setupHome(); showHome();
   if (supabaseEnabled()) {
     fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); refreshRateBox(); } });
