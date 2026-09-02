@@ -473,8 +473,7 @@ function setupHome() {
   document.getElementById('homeNew').addEventListener('click', () => { newProject(); hideHome(); });
   document.getElementById('homeOpen').addEventListener('click', () => openProjectFile(hideHome));
   document.getElementById('homeContinue').addEventListener('click', hideHome);
-  const home = document.getElementById('home');
-  home.addEventListener('click', (e) => { if (e.target === home) hideHome(); });
+  // Kein Schließen durch Klick auf den Hintergrund – nur die Buttons öffnen den Designer.
   const hb = document.getElementById('homeBtn');
   if (hb) { hb.addEventListener('click', showHome); hb.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showHome(); } }); }
 }
