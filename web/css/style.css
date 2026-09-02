@@ -379,40 +379,27 @@ body.theme-light .brand#homeBtn:hover { background: rgba(20,30,50,.05); }
 
 .home-overlay {
   position: fixed; inset: 0; z-index: 200; display: none;
-  align-items: center; justify-content: center; padding: 24px;
+  align-items: center; justify-content: flex-start; padding: 24px;
   background:
-    radial-gradient(820px 560px at 80% 26%, rgba(0,145,255,0.18), transparent 60%),
-    radial-gradient(circle at 46% 34%, #171b22, #0a0c10 82%);
+    linear-gradient(90deg, rgba(7,9,13,0.94) 0%, rgba(7,9,13,0.72) 26%, rgba(7,9,13,0.30) 52%, rgba(7,9,13,0.10) 74%, rgba(7,9,13,0) 100%),
+    url('/WCDWallpaper.png') center center / cover no-repeat;
   overflow: hidden;
 }
-/* Split-Felge: links metallisch, rechts Blueprint mit Maßen */
-.home-overlay::before {
-  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  background: url('/home-bg.svg') no-repeat;
-  background-position: right -90px center;
-  background-size: auto 120%;
-  opacity: 0.6;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
-}
 .home-overlay.show { display: flex; }
-body.theme-light .home-overlay {
-  background:
-    radial-gradient(820px 560px at 80% 26%, rgba(0,120,230,0.13), transparent 60%),
-    radial-gradient(circle at 46% 34%, #ffffff, #dfe5ec 84%);
-}
-body.theme-light .home-overlay::before { opacity: 0.62; filter: brightness(0.72) saturate(1.15); }
+/* Wallpaper bleibt auch im hellen Theme dunkel (Hero) */
+body.theme-light .home-overlay { }
 
-/* Auf breiten Screens: Karte links, Felge rechts voll sichtbar */
 @media (min-width: 900px) {
-  .home-overlay { justify-content: flex-start; padding-left: clamp(40px, 7vw, 120px); }
-  .home-overlay::before { background-position: right 8px center; background-size: auto 112%; opacity: 0.72;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%); mask-image: linear-gradient(90deg, transparent 0%, #000 22%); }
+  .home-overlay { padding-left: clamp(40px, 7vw, 120px); }
 }
-/* Auf schmalen Screens: Motiv dezent halten, Karte im Fokus */
+/* Schmale Screens: kräftigere Abdunklung, Karte zentriert */
 @media (max-width: 680px) {
-  .home-overlay::before { opacity: 0.3; background-position: right -150px center; background-size: auto 150%;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%); mask-image: linear-gradient(90deg, transparent 0%, #000 55%); }
+  .home-overlay {
+    justify-content: center;
+    background:
+      linear-gradient(180deg, rgba(7,9,13,0.86) 0%, rgba(7,9,13,0.66) 45%, rgba(7,9,13,0.86) 100%),
+      url('/WCDWallpaper.png') center center / cover no-repeat;
+  }
 }
 .home-card {
   position: relative; z-index: 1;
