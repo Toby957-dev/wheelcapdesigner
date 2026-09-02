@@ -6,6 +6,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { DEFAULTS, GROUPS } from './config.js';
 import { BRAND_LIBRARY, GENERIC } from './brands.js';
 import { loadUserPresets, saveUserPreset, deleteUserPreset, proposalJSON } from './userPresets.js';
+import { loadProjects, saveProject, updateProject, deleteProject } from './projects.js';
 import { supabaseEnabled, fetchCommunityGroup, submitProposal, rateTemplate, submitFeedback } from './supabase.js';
 import { buildCap, derive, initGeometry } from './geometry.js';
 import { svgToGeometry, textToGeometry, shapeToGeometry } from './logo.js';
@@ -72,6 +73,8 @@ const ICONS = {
 const state = { ...DEFAULTS };
 let mode = localStorage.getItem('nd_mode') || 'standard';
 let logoSvgText = null, logoFileName = null;
+let currentProjectId = null, currentProjectName = '';
+let projNameInput = null;
 const inputs = {}, controlEls = {};
 let library = BRAND_LIBRARY.slice();
 let refreshBrands = () => {};
@@ -228,6 +231,39 @@ function setFileName(name) {
 
 function findMeta(key) { for (const g of GROUPS) for (const m of g.params) if (m.key === key) return m; return { step: 1 }; }
 
+// ============ Projekt-Sektion ============
+function buildProjectSection(root) {
+  const sec = document.createElement('div'); sec.className = 'section';
+  const folder = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+  sec.innerHTML = `<div class="section-head"><span class="ico">${folder}</span><h2>Projekt</h2><span class="chev"></span></div>`;
+  const body = document.createElement('div'); body.className = 'section-body';
+
+  const saveRow = document.createElement('div'); saveRow.className = 'proj-save-row';
+  const nameInp = document.createElement('input'); nameInp.type = 'text'; nameInp.className = 'ctl'; nameInp.placeholder = 'Projektname';
+  nameInp.value = currentProjectName || '';
+  const saveBtn = document.createElement('button'); saveBtn.className = 'btn btn-ghost btn-sm'; saveBtn.textContent = 'Speichern';
+  saveBtn.addEventListener('click', () => { saveProjectToBrowser(nameInp.value); nameInp.value = currentProjectName; flash(saveBtn, 'Gespeichert ✓'); });
+  saveRow.append(nameInp, saveBtn); body.appendChild(saveRow);
+  projNameInput = nameInp;
+
+  const acts = document.createElement('div'); acts.className = 'proj-actions';
+  const dl = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l4-4m-4 4l-4-4M5 21h14"/></svg>';
+  const op = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+  const nw = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+  const fileBtn = document.createElement('button'); fileBtn.className = 'btn btn-ghost'; fileBtn.innerHTML = dl + ' Als Datei';
+  const openBtn = document.createElement('button'); openBtn.className = 'btn btn-ghost'; openBtn.innerHTML = op + ' Öffnen';
+  const newBtn = document.createElement('button'); newBtn.className = 'btn btn-ghost proj-full'; newBtn.innerHTML = nw + ' Neues Projekt';
+  fileBtn.addEventListener('click', saveProjectFile);
+  openBtn.addEventListener('click', () => openProjectFile(() => { if (projNameInput) projNameInput.value = currentProjectName; }));
+  newBtn.addEventListener('click', () => { newProject(); if (projNameInput) projNameInput.value = ''; });
+  acts.append(fileBtn, openBtn, newBtn); body.appendChild(acts);
+  body.insertAdjacentHTML('beforeend', `<div class="hint" style="margin-top:8px">„Als Datei" = .wcd zum Sichern/Teilen · „Speichern" legt es in diesem Browser ab.</div>`);
+
+  sec.appendChild(body);
+  sec.querySelector('.section-head').addEventListener('click', () => sec.classList.toggle('collapsed'));
+  root.appendChild(sec);
+}
+
 // ============ Vorlagen ============
 function buildLibrarySection(root) {
   const sec = document.createElement('div'); sec.className = 'section';
@@ -352,9 +388,99 @@ async function proposeCurrent() {
 function flash(btn, txt) { const o = btn.textContent; btn.textContent = txt; setTimeout(() => btn.textContent = o, 1200); }
 function applyValues(values) { Object.assign(state, values); syncInputs(); onParamChange(true); }
 
+// ============ Projekte (ganzer Zustand) ============
+function buildProjectPayload() {
+  const p = { type: 'wheelcap-project', version: 1, savedAt: new Date().toISOString(), state: { ...state } };
+  if (state.logoMode === 'svg' && logoSvgText) p.logo = { svgText: logoSvgText, fileName: logoFileName || 'logo.svg' };
+  return p;
+}
+function applyProjectPayload(p) {
+  if (!p || p.type !== 'wheelcap-project' || !p.state) throw new Error('Keine gültige Projektdatei.');
+  Object.assign(state, DEFAULTS, p.state);          // fehlende Keys -> Standard
+  logoSvgText = null; logoFileName = null;
+  if (p.logo && p.logo.svgText) { logoSvgText = p.logo.svgText; logoFileName = p.logo.fileName || 'logo.svg'; }
+  setFileName(logoFileName || '');
+  syncInputs(); updateVisibility(); onParamChange(true);
+}
+function newProject() {
+  Object.assign(state, DEFAULTS);
+  logoSvgText = null; logoFileName = null;
+  currentProjectId = null; currentProjectName = '';
+  setFileName(''); syncInputs(); updateVisibility(); onParamChange(true);
+}
+function saveProjectFile() {
+  const name = (currentProjectName || 'wheelcap-projekt').replace(/[^\w\-. ]+/g, '_');
+  const blob = new Blob([JSON.stringify(buildProjectPayload(), null, 2)], { type: 'application/json' });
+  download(blob, name + '.wcd');   // download() zeigt bereits einen Toast
+}
+function openProjectFile(then) {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.wcd,.json,application/json';
+  inp.onchange = async () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    try {
+      const p = JSON.parse(await f.text());
+      applyProjectPayload(p);
+      currentProjectId = null;
+      currentProjectName = f.name.replace(/\.(wcd|json)$/i, '');
+      showToast('✓ Projekt geöffnet: ' + currentProjectName);
+      if (then) then();
+    } catch (e) { showToast('⚠ Datei konnte nicht geöffnet werden'); }
+  };
+  inp.click();
+}
+function saveProjectToBrowser(name) {
+  const nm = (name || currentProjectName || '').trim() || ('Projekt ' + new Date().toLocaleString('de-DE'));
+  const payload = buildProjectPayload();
+  if (currentProjectId) { updateProject(currentProjectId, nm, payload); }
+  else { const rec = saveProject(nm, payload); currentProjectId = rec.id; }
+  currentProjectName = nm;
+  renderHomeList();
+  showToast('✓ Projekt gespeichert: ' + nm);
+}
+function openBrowserProject(rec) {
+  try { applyProjectPayload(rec.payload); currentProjectId = rec.id; currentProjectName = rec.name; showToast('✓ Projekt geöffnet: ' + rec.name); }
+  catch (e) { showToast('⚠ Projekt beschädigt'); }
+}
+
+// ============ Startseite ============
+function showHome() { renderHomeList(); document.getElementById('home').classList.add('show'); }
+function hideHome() { document.getElementById('home').classList.remove('show'); }
+function renderHomeList() {
+  const list = document.getElementById('homeList'); if (!list) return;
+  const projs = loadProjects();
+  list.innerHTML = '';
+  if (!projs.length) { list.innerHTML = '<div class="empty">Noch keine gespeicherten Projekte. Speichere im Designer über „Projekt".</div>'; return; }
+  for (const rec of projs) {
+    const row = document.createElement('div'); row.className = 'home-row';
+    const main = document.createElement('div'); main.className = 'hr-main';
+    const nm = document.createElement('div'); nm.className = 'hr-name'; nm.textContent = rec.name;
+    const dt = document.createElement('div'); dt.className = 'hr-date';
+    dt.textContent = new Date(rec.savedAt).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+    main.append(nm, dt);
+    const open = document.createElement('button'); open.className = 'hr-open'; open.textContent = 'Öffnen';
+    const del = document.createElement('button'); del.className = 'hr-del'; del.innerHTML = '&times;'; del.title = 'Löschen';
+    const doOpen = () => { openBrowserProject(rec); hideHome(); };
+    main.addEventListener('click', doOpen);
+    open.addEventListener('click', doOpen);
+    del.addEventListener('click', (e) => { e.stopPropagation(); deleteProject(rec.id); if (currentProjectId === rec.id) currentProjectId = null; renderHomeList(); });
+    row.append(main, open, del); list.appendChild(row);
+  }
+}
+function setupHome() {
+  document.getElementById('homeNew').addEventListener('click', () => { newProject(); hideHome(); });
+  document.getElementById('homeOpen').addEventListener('click', () => openProjectFile(hideHome));
+  document.getElementById('homeContinue').addEventListener('click', hideHome);
+  const home = document.getElementById('home');
+  home.addEventListener('click', (e) => { if (e.target === home) hideHome(); });
+  const hb = document.getElementById('homeBtn');
+  if (hb) { hb.addEventListener('click', showHome); hb.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showHome(); } }); }
+}
+
 // ============ Aufbau + Modus ============
 function buildUI() {
   const root = document.getElementById('controls');
+  buildProjectSection(root);
   buildLibrarySection(root);
 
   for (const g of GROUPS) {
@@ -623,6 +749,7 @@ function setupFeedback() {
 try {
   initThree(); buildUI(); initGeometry(); rebuild();
   setupDownloadPopup(); initKofi(); setupMakerWorld(); setupFeedback();
+  setupHome(); showHome();
   if (supabaseEnabled()) {
     fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); refreshRateBox(); } });
   }

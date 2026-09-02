@@ -66,8 +66,37 @@
   </script>
 </head>
 <body>
+  <div class="home-overlay" id="home">
+    <div class="home-card">
+      <div class="home-brand">
+        <img src="/wc-mark.png" width="52" height="52" alt="" />
+        <div>
+          <h2>WheelCapDesigner</h2>
+          <p>Nabendeckel selbst gestalten – Maße, Logo, 3D-Vorschau, STL/3MF</p>
+        </div>
+      </div>
+      <div class="home-actions">
+        <button class="home-tile primary" id="homeNew">
+          <span class="ht-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+          <span class="ht-t">Neues Projekt</span>
+          <span class="ht-s">Leer mit Standardmaßen starten</span>
+        </button>
+        <button class="home-tile" id="homeOpen">
+          <span class="ht-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></span>
+          <span class="ht-t">Projekt öffnen</span>
+          <span class="ht-s">.wcd-Datei vom Rechner laden</span>
+        </button>
+      </div>
+      <div class="home-recent">
+        <div class="home-recent-head"><span>Gespeicherte Projekte</span><span class="home-hint">in diesem Browser</span></div>
+        <div class="home-list" id="homeList"></div>
+      </div>
+      <button class="home-continue" id="homeContinue">Aktuelles Projekt weiter bearbeiten →</button>
+    </div>
+  </div>
+
   <header class="topbar">
-    <div class="brand">
+    <div class="brand" id="homeBtn" role="button" tabindex="0" title="Zur Startseite">
       <div class="mark"><img src="/wc-mark.png" alt="WheelCap Designer Logo" width="38" height="38" /></div>
       <div>
         <h1>WheelCapDesigner</h1>

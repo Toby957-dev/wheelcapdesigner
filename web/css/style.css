@@ -371,3 +371,67 @@ input.ctl[type=text]:focus, select.ctl:focus { outline: none; border-color: var(
   opacity: 0; transition: opacity .2s ease, transform .2s ease;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ===== Startseite (Home) ===== */
+.brand#homeBtn { cursor: pointer; border-radius: 10px; padding: 4px 6px; margin: -4px -6px; transition: background .15s; }
+.brand#homeBtn:hover { background: rgba(255,255,255,.05); }
+body.theme-light .brand#homeBtn:hover { background: rgba(20,30,50,.05); }
+
+.home-overlay {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  align-items: center; justify-content: center; padding: 24px;
+  background: radial-gradient(circle at 50% 30%, #171b22, #0a0c10 78%);
+  overflow-y: auto;
+}
+.home-overlay.show { display: flex; }
+body.theme-light .home-overlay { background: radial-gradient(circle at 50% 30%, #ffffff, #dfe5ec 80%); }
+.home-card {
+  width: 100%; max-width: 560px; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 18px; box-shadow: var(--shadow); padding: 30px 28px 22px; margin: auto;
+}
+.home-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.home-brand img { width: 52px; height: 52px; display: block; }
+.home-brand h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.home-brand p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+.home-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+.home-tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  text-align: left; padding: 16px; border-radius: 12px; cursor: pointer;
+  background: var(--panel-2); border: 1px solid var(--border-2); color: var(--text);
+  font-family: inherit; transition: border-color .15s, transform .08s, background .15s;
+}
+.home-tile:hover { border-color: var(--faint); }
+.home-tile:active { transform: scale(.98); }
+.home-tile.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.home-tile.primary:hover { filter: brightness(1.06); }
+.home-tile .ht-ico { width: 26px; height: 26px; margin-bottom: 6px; }
+.home-tile .ht-ico svg { width: 26px; height: 26px; }
+.home-tile .ht-t { font-size: 14.5px; font-weight: 600; }
+.home-tile .ht-s { font-size: 11.5px; opacity: .78; }
+
+.home-recent-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.home-recent-head span:first-child { font-size: 11px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .04em; }
+.home-hint { font-size: 11px; color: var(--faint); }
+.home-list { display: flex; flex-direction: column; gap: 7px; max-height: 240px; overflow-y: auto; }
+.home-list .empty { font-size: 12.5px; color: var(--faint); padding: 6px 2px; }
+.home-row { display: flex; align-items: center; gap: 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 9px 10px 9px 13px; }
+.home-row .hr-main { flex: 1; min-width: 0; cursor: pointer; }
+.home-row .hr-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.home-row .hr-date { font-size: 11px; color: var(--faint); margin-top: 1px; }
+.home-row .hr-open { border: 1px solid var(--border-2); background: transparent; color: var(--muted); font-family: inherit; font-size: 11.5px; padding: 5px 11px; border-radius: 7px; cursor: pointer; }
+.home-row .hr-open:hover { color: var(--text); border-color: var(--faint); }
+.home-row .hr-del { border: none; background: transparent; color: var(--faint); font-size: 17px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+.home-row .hr-del:hover { color: var(--danger); }
+
+.home-continue { display: block; width: 100%; margin-top: 18px; padding: 10px; background: transparent; border: none; color: var(--muted); font-family: inherit; font-size: 12.5px; cursor: pointer; }
+.home-continue:hover { color: var(--text); }
+
+/* ===== Projekt-Sektion (Sidebar) ===== */
+.proj-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.proj-actions .btn { justify-content: center; padding: 9px 10px; font-size: 12.5px; }
+.proj-actions .btn svg { width: 15px; height: 15px; }
+.proj-full { grid-column: 1 / -1; }
+.proj-save-row { display: flex; gap: 8px; margin-top: 10px; }
+.proj-save-row input { flex: 1; }
+@media (max-width: 560px) { .home-actions { grid-template-columns: 1fr; } }
