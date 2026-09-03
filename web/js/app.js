@@ -791,6 +791,12 @@ function setupI18nStatic() {
   setText('.home-recent-head span:first-child', t('Gespeicherte Projekte'));
   setText('.home-recent-head span:last-child', t('in diesem Browser'));
   setText('#homeContinue', t('Aktuelles Projekt weiter bearbeiten →'));
+  const guide = document.getElementById('homeGuide');
+  if (guide) {
+    const de = getLang() === 'de';
+    guide.href = (de ? '/nabendeckel-generator.html' : '/hub-cap-generator.html') + '?utm_source=app&utm_medium=home&utm_campaign=guide';
+    guide.textContent = de ? "So funktioniert's" : 'How it works';
+  }
 }
 
 function setupLangSwitcher() {

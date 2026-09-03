@@ -461,3 +461,7 @@ body.theme-light .home-overlay { }
 .lang-btn.active { opacity: 1; border-color: var(--accent); }
 .lang-btn .flag { display: block; width: 26px; height: 18px; border-radius: 3px; overflow: hidden; box-shadow: 0 0 0 1px rgba(0,0,0,.18); }
 .lang-btn .flag svg { display: block; width: 100%; height: 100%; }
+
+/* Anleitung-Link auf der Startseite */
+.home-guide { display: block; text-align: center; margin-top: 2px; color: var(--faint); font-size: 12px; text-decoration: none; }
+.home-guide:hover { color: var(--muted); text-decoration: underline; }
