@@ -768,7 +768,8 @@ function setupI18nStatic() {
   setAttr('#themeToggle', 'title', t('Hell/Dunkel umschalten')); setAttr('#themeToggle', 'aria-label', t('Hell/Dunkel umschalten'));
   setAttr('#homeBtn', 'title', t('Zur Startseite'));
   // Stage
-  setText('.hintbar', t('Linksklick: drehen · Rechtsklick: verschieben · Scrollen: zoomen'));
+  const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  setText('.hintbar', t(coarse ? 'Ziehen: drehen · 2 Finger: verschieben/zoomen' : 'Linksklick: drehen · Rechtsklick: verschieben · Scrollen: zoomen'));
   const stSpan = document.querySelector('#status span:last-child'); if (stSpan) stSpan.textContent = t('berechne…');
   setText('#fatal h3', t('Konnte nicht laden'));
   setText('#fatal p', t('Die 3D-Bibliothek konnte nicht geladen werden (Internetverbindung nötig).'));

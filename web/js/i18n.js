@@ -36,6 +36,11 @@ const DICT = {
     fr: 'Clic gauche : pivoter · Clic droit : déplacer · Molette : zoom',
     es: 'Clic izq.: rotar · Clic der.: mover · Rueda: zoom',
     it: 'Clic sx: ruota · Clic dx: sposta · Rotella: zoom' },
+  'Ziehen: drehen · 2 Finger: verschieben/zoomen': {
+    en: 'Drag: rotate · 2 fingers: pan/zoom',
+    fr: 'Glisser : pivoter · 2 doigts : déplacer/zoom',
+    es: 'Arrastrar: rotar · 2 dedos: mover/zoom',
+    it: 'Trascina: ruota · 2 dita: sposta/zoom' },
   'berechne…': { en: 'computing…', fr: 'calcul…', es: 'calculando…', it: 'calcolo…' },
   'Höhe': { en: 'Height', fr: 'Hauteur', es: 'Altura', it: 'Altezza' },
   'Material': { en: 'Material', fr: 'Matière', es: 'Material', it: 'Materiale' },

@@ -95,7 +95,7 @@ select.preset:hover { border-color: var(--faint); }
 .modal-overlay {
   position: fixed; inset: 0; z-index: 100; display: none;
   align-items: center; justify-content: center; padding: 20px;
-  background: rgba(6, 8, 12, 0.62); backdrop-filter: blur(4px);
+  background: rgba(6, 8, 12, 0.62); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
 }
 .modal-overlay.show { display: flex; }
 .modal {
@@ -161,7 +161,7 @@ body.theme-light .ico-moon { display: none; }
 .pr-del:hover { color: var(--danger); border-color: var(--danger); }
 
 /* ---------- Layout ---------- */
-.layout { display: flex; height: calc(100vh - 60px); }
+.layout { display: flex; height: calc(100vh - 60px); height: calc(100dvh - 60px); }
 
 .sidebar {
   width: 344px; flex-shrink: 0;
@@ -271,7 +271,7 @@ input.ctl[type=text]:focus, select.ctl:focus { outline: none; border-color: var(
 .badge {
   position: absolute; left: 16px; top: 16px;
   display: flex; gap: 16px; align-items: center;
-  background: rgba(18, 21, 27, 0.82); backdrop-filter: blur(8px);
+  background: rgba(18, 21, 27, 0.82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   border: 1px solid var(--border); border-radius: 10px;
   padding: 10px 14px; font-size: 12px; color: var(--muted);
   font-variant-numeric: tabular-nums;
@@ -317,10 +317,26 @@ input.ctl[type=text]:focus, select.ctl:focus { outline: none; border-color: var(
 .fatal code { display: block; margin-top: 12px; background: var(--panel); padding: 12px; border-radius: 8px; font-size: 12px; color: var(--muted); text-align: left; white-space: pre-wrap; }
 
 @media (max-width: 820px) {
-  .layout { flex-direction: column; height: calc(100vh - 60px); }
-  .sidebar { width: 100%; height: 45%; border-right: none; border-bottom: 1px solid var(--border); }
-  .stage { height: 55%; }
+  .layout { flex-direction: column; height: calc(100vh - 60px); height: calc(100dvh - 60px); }
+  .sidebar { width: 100%; height: 46%; border-right: none; border-bottom: 1px solid var(--border); }
+  .stage { height: 54%; }
   .brand p { display: none; }
+  /* Top-Leiste kompakter, damit nichts überläuft */
+  .topbar { padding: 0 12px; }
+  .topbar-actions { gap: 8px; }
+  #kofiTop { display: none; }
+}
+/* Schmale Handys: Platz sparen – WC-Logo bleibt (klickbar = Startseite) */
+@media (max-width: 600px) {
+  .brand h1 { display: none; }
+  .mw-link { display: none !important; }   /* MakerWorld ist auf Startseite/Anleitung verlinkt */
+}
+/* Sehr schmale Handys: Download-Button als Icon, Modus-Umschalter kompakt */
+@media (max-width: 480px) {
+  .topbar-actions { gap: 6px; }
+  .mode-toggle button { padding: 6px 9px; }
+  #download { font-size: 0; padding: 10px 12px; }
+  #download svg { width: 18px; height: 18px; }
 }
 
 /* ===== MakerWorld-Link (Top-Leiste) ===== */
