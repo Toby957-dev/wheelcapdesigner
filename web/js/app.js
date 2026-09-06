@@ -820,6 +820,7 @@ try {
   setupDownloadPopup(); initKofi(); setupMakerWorld(); setupFeedback();
   setupI18nStatic(); setupLangSwitcher();
   setupHome(); showHome();
+  window.__wcdReady = true;   // Signal an den Lade-Wächter (index.html)
   if (supabaseEnabled()) {
     fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); refreshRateBox(); } });
   }

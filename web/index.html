@@ -55,8 +55,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-  <!-- Import-Map-Polyfill für ältere Safari/iOS (< 16.4); moderne Browser überspringen ihn -->
-  <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.min.js"></script>
   <script type="importmap">
   {
     "imports": {
@@ -169,6 +167,16 @@
   </div>
 
   <script type="module" src="js/app.js"></script>
+  <!-- Lade-Wächter: zeigt eine Meldung, falls die App (z. B. Module) nicht startet -->
+  <script>
+    window.setTimeout(function () {
+      if (window.__wcdReady) return;
+      var f = document.getElementById('fatal');
+      var m = document.getElementById('fatal-msg');
+      if (f) f.classList.add('show');
+      if (m) m.textContent = 'Bitte die Seite neu laden. Falls es weiter hakt: Internetverbindung prüfen oder einen anderen Browser (Chrome/Safari, aktuelle Version) versuchen.';
+    }, 12000);
+  </script>
   <!-- Vercel Web Analytics (cookieless) -->
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
