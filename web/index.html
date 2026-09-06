@@ -10,6 +10,10 @@
   <meta name="author" content="WheelCapDesigner" />
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0a1526" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="WheelCap" />
   <link rel="canonical" href="https://wheelcapdesigner-u4aa.vercel.app/" />
 
   <!-- Favicons / Icons -->
@@ -167,6 +171,14 @@
   </div>
 
   <script type="module" src="js/app.js"></script>
+  <!-- Service-Worker registrieren -> installierbare App (moderne WebAPK statt Alt-Verknüpfung) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js').catch(function () {});
+      });
+    }
+  </script>
   <!-- Lade-Wächter: zeigt eine Meldung, falls die App (z. B. Module) nicht startet -->
   <script>
     window.setTimeout(function () {
