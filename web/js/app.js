@@ -1,17 +1,14 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { STLExporter } from 'three/addons/exporters/STLExporter.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+// Schwere 3D-Engine (Three.js + Addons) wird erst beim Betreten des Designers
+// dynamisch geladen -> leichter, schneller erster Seitenaufruf (Startseite).
+let THREE, OrbitControls, STLExporter, RoomEnvironment, mergeGeometries;
 import { DEFAULTS, GROUPS } from './config.js';
 import { BRAND_LIBRARY, GENERIC } from './brands.js';
 import { loadUserPresets, saveUserPreset, deleteUserPreset, proposalJSON } from './userPresets.js';
 import { loadProjects, saveProject, updateProject, deleteProject } from './projects.js';
 import { t, getLang, setLang, LANGS, FLAGS, applyHtmlLang } from './i18n.js';
 import { supabaseEnabled, fetchCommunityGroup, submitProposal, rateTemplate, submitFeedback } from './supabase.js';
-import { buildCap, derive, initGeometry } from './geometry.js';
-import { svgToGeometry, textToGeometry, shapeToGeometry } from './logo.js';
-import { export3MF } from './threemf.js';
+// Geometrie-/Logo-/Export-Module ebenfalls dynamisch (ziehen three + Manifold/fflate).
+let buildCap, derive, initGeometry, svgToGeometry, textToGeometry, shapeToGeometry, export3MF;
 
 const SUBMIT_EMAIL = 'vorlagen@example.com';
 
@@ -86,7 +83,7 @@ const canvas = document.getElementById('viewport');
 const stage = canvas.parentElement;
 let renderer, scene, camera, controls, capMesh, logoMesh, capMaterial, logoMaterial, grid;
 let theme = localStorage.getItem('nd_theme') || 'dark';
-const exporter = new STLExporter();
+let exporter;   // wird in loadEngine() erzeugt
 
 function initThree() {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -447,7 +444,55 @@ function openBrowserProject(rec) {
 
 // ============ Startseite ============
 function showHome() { renderHomeList(); document.getElementById('home').classList.add('show'); }
-function hideHome() { document.getElementById('home').classList.remove('show'); }
+function hideHome() { document.getElementById('home').classList.remove('show'); ensureDesigner(); }
+
+// 3D-Engine (Three.js/WebGL + Manifold-WASM + erster Aufbau) erst laden & starten,
+// wenn der Nutzer den Designer betritt – hält den ersten Seitenaufruf leicht & schnell.
+let designerStarted = false, designerLoading = false;
+async function loadEngine() {
+  const [three, ocm, stlm, rem, bgum, geom, logom, tmfm] = await Promise.all([
+    import('three'),
+    import('three/addons/controls/OrbitControls.js'),
+    import('three/addons/exporters/STLExporter.js'),
+    import('three/addons/environments/RoomEnvironment.js'),
+    import('three/addons/utils/BufferGeometryUtils.js'),
+    import('./geometry.js'),
+    import('./logo.js'),
+    import('./threemf.js'),
+  ]);
+  THREE = three;
+  OrbitControls = ocm.OrbitControls;
+  STLExporter = stlm.STLExporter;
+  RoomEnvironment = rem.RoomEnvironment;
+  mergeGeometries = bgum.mergeGeometries;
+  ({ buildCap, derive, initGeometry } = geom);
+  ({ svgToGeometry, textToGeometry, shapeToGeometry } = logom);
+  export3MF = tmfm.export3MF;
+  exporter = new STLExporter();
+}
+async function ensureDesigner() {
+  if (designerStarted || designerLoading) return;
+  designerLoading = true;
+  statusEl.classList.add('show');   // „berechne…" als Lade-Feedback
+  try {
+    await loadEngine();
+    initThree();
+    initGeometry();
+    designerStarted = true;
+    await rebuild();
+    // Community-Vorlagen (Supabase) erst jetzt laden – nicht beim Seitenaufruf.
+    if (supabaseEnabled()) {
+      fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); refreshRateBox(); } });
+    }
+  } catch (e) {
+    console.error(e);
+    document.getElementById('fatal').classList.add('show');
+    document.getElementById('fatal-msg').textContent = (e && e.message) || String(e);
+  } finally {
+    designerLoading = false;
+    statusEl.classList.remove('show');
+  }
+}
 function renderHomeList() {
   const list = document.getElementById('homeList'); if (!list) return;
   const projs = loadProjects();
@@ -559,6 +604,7 @@ let rebuildTimer = null, building = false, pending = false, warnTimer = null;
 function onParamChange(immediate) { updateVisibility(); clearTimeout(rebuildTimer); rebuildTimer = setTimeout(rebuild, immediate ? 0 : 90); }
 
 function checkWarnings() {
+  if (!derive) return;   // Engine noch nicht geladen
   const msgs = [];
   if (state.outerDiameter <= state.mountDiameter) msgs.push(t('Außen-Ø muss größer als Montage-Ø sein.'));
   const d = derive(state);
@@ -569,6 +615,7 @@ function checkWarnings() {
 }
 
 async function rebuild() {
+  if (!renderer) return;                 // 3D-Engine noch nicht gestartet (Startseite offen)
   if (building) { pending = true; return; }
   building = true; statusEl.classList.add('show'); checkWarnings();
   await new Promise(r => setTimeout(r, 20));
@@ -819,14 +866,11 @@ function setupLangSwitcher() {
 
 // ============ Start ============
 try {
-  initThree(); buildUI(); initGeometry(); rebuild();
+  buildUI();                 // nur DOM/Sidebar – leicht; 3D-Engine startet erst beim Betreten
   setupDownloadPopup(); setupMakerWorld(); setupFeedback();
   setupI18nStatic(); setupLangSwitcher();
   setupHome(); showHome();
   window.__wcdReady = true;   // Signal an den Lade-Wächter (index.html)
-  if (supabaseEnabled()) {
-    fetchCommunityGroup().then(g => { if (g && g.brands.length) { library = [...BRAND_LIBRARY, g]; refreshBrands(); refreshRateBox(); } });
-  }
 } catch (e) {
   console.error(e);
   document.getElementById('fatal').classList.add('show');
