@@ -643,19 +643,22 @@ function showToast(msg) {
   toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
 }
 
-// ---- Ko-fi ----
+// ---- Ko-fi (bewusst NICHT beim Laden – erst nach dem Download, lazy geladen) ----
 const KOFI = { id: 'O8C525LFQ2', color: '#72a4f2', text: 'Kaffee spendieren' };
-let kofiHTML = null;
-function initKofi() {
+let kofiHTML = null, kofiLoading = false, kofiCbs = [];
+function ensureKofi(cb) {
+  if (kofiHTML) { cb(kofiHTML); return; }
+  kofiCbs.push(cb);
+  if (kofiLoading) return;
+  kofiLoading = true;
   const s = document.createElement('script');
   s.src = 'https://storage.ko-fi.com/cdn/widget/Widget_2.js';
   s.onload = () => {
-    try {
-      window.kofiwidget2.init(t(KOFI.text), KOFI.color, KOFI.id);
-      kofiHTML = window.kofiwidget2.getHTML();
-      const top = document.getElementById('kofiTop'); if (top) top.innerHTML = kofiHTML;
-    } catch (e) { console.warn('Ko-fi:', e); }
+    try { window.kofiwidget2.init(t(KOFI.text), KOFI.color, KOFI.id); kofiHTML = window.kofiwidget2.getHTML(); }
+    catch (e) { console.warn('Ko-fi:', e); }
+    kofiCbs.forEach(c => c(kofiHTML)); kofiCbs = [];
   };
+  s.onerror = () => { kofiCbs.forEach(c => c(null)); kofiCbs = []; };
   document.head.appendChild(s);
 }
 function setupDownloadPopup() {
@@ -665,11 +668,11 @@ function setupDownloadPopup() {
   document.getElementById('dlContinue').addEventListener('click', hide);
   modal.addEventListener('click', (e) => { if (e.target === modal) hide(); });
 }
+// Wird NACH dem Download aufgerufen: Datei läuft bereits im Hintergrund, dann dezenter Dank.
 function showDownloadPopup() {
   if (sessionStorage.getItem('nd_kofi_shown')) return;   // pro Sitzung nur einmal
   sessionStorage.setItem('nd_kofi_shown', '1');
-  const pop = document.getElementById('kofiPopup');
-  if (pop && kofiHTML && !pop.innerHTML) pop.innerHTML = kofiHTML;
+  ensureKofi((html) => { const pop = document.getElementById('kofiPopup'); if (pop && html && !pop.innerHTML) pop.innerHTML = html; });
   document.getElementById('dlModal').classList.add('show');
 }
 // Nur Position behalten, damit sich Deckel- und Logo-Geometrie verschmelzen lassen.
@@ -817,7 +820,7 @@ function setupLangSwitcher() {
 // ============ Start ============
 try {
   initThree(); buildUI(); initGeometry(); rebuild();
-  setupDownloadPopup(); initKofi(); setupMakerWorld(); setupFeedback();
+  setupDownloadPopup(); setupMakerWorld(); setupFeedback();
   setupI18nStatic(); setupLangSwitcher();
   setupHome(); showHome();
   window.__wcdReady = true;   // Signal an den Lade-Wächter (index.html)

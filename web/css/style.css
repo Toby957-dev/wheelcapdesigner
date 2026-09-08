@@ -398,7 +398,7 @@ body.theme-light .brand#homeBtn:hover { background: rgba(20,30,50,.05); }
   align-items: center; justify-content: flex-start; padding: 24px;
   background:
     linear-gradient(90deg, rgba(7,9,13,0.94) 0%, rgba(7,9,13,0.72) 26%, rgba(7,9,13,0.30) 52%, rgba(7,9,13,0.10) 74%, rgba(7,9,13,0) 100%),
-    url('/WCDWallpaper.png') center center / cover no-repeat;
+    url('/WCDWallpaper.webp') center center / cover no-repeat;
   overflow: hidden;
 }
 .home-overlay.show { display: flex; }
@@ -414,7 +414,7 @@ body.theme-light .home-overlay { }
     justify-content: center;
     background:
       linear-gradient(180deg, rgba(7,9,13,0.86) 0%, rgba(7,9,13,0.66) 45%, rgba(7,9,13,0.86) 100%),
-      url('/WCDWallpaper.png') center center / cover no-repeat;
+      url('/WCDWallpaper.webp') center center / cover no-repeat;
   }
 }
 .home-card {
