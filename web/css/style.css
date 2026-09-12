@@ -481,3 +481,20 @@ body.theme-light .home-overlay { }
 /* Anleitung-Link auf der Startseite */
 .home-guide { display: block; text-align: center; margin-top: 2px; color: var(--faint); font-size: 12px; text-decoration: none; }
 .home-guide:hover { color: var(--muted); text-decoration: underline; }
+
+/* Feedback-Button in der Top-Leiste (Icon + Text) */
+.fb-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  height: 38px; padding: 0 13px;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--border-2); border-radius: var(--radius);
+  font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.fb-btn:hover { border-color: var(--faint); }
+.fb-btn:active { transform: scale(.97); }
+.fb-btn svg { width: 17px; height: 17px; }
+@media (max-width: 600px) {
+  .fb-btn { padding: 0; width: 38px; justify-content: center; }
+  .fb-btn-label { display: none; }
+}
