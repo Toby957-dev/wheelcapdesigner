@@ -78,12 +78,22 @@ create table if not exists cap_feedback (
 );
 
 -- 5c) Öffentliche Zusammenfassung: Schnitt + Stimmenzahl je Vorlage
-create or replace view cap_rating_summary as
+--     Als SECURITY-DEFINER-FUNKTION mit festem search_path (nicht als View):
+--     das Aggregat ist oeffentlich lesbar, die Einzelstimmen bleiben privat,
+--     und der "SECURITY DEFINER view"-Linter-Hinweis entfaellt.
+create or replace function public.cap_rating_summary()
+  returns table (template_id uuid, avg_rating numeric, votes integer)
+  language sql
+  stable
+  security definer
+  set search_path = public
+as $$
   select template_id,
          round(avg(rating)::numeric, 2) as avg_rating,
          count(*)::int                  as votes
-  from cap_ratings
-  group by template_id;
+  from public.cap_ratings
+  group by template_id
+$$;
 
 -- 5d) Row-Level-Security
 alter table cap_ratings  enable row level security;
@@ -99,5 +109,5 @@ create policy "anon update ratings" on cap_ratings
 create policy "anon insert feedback" on cap_feedback
   for insert with check (true);
 
--- Zusammenfassung öffentlich lesbar machen (Einzelstimmen bleiben ungelesen).
-grant select on cap_rating_summary to anon, authenticated;
+-- Zusammenfassungs-Funktion öffentlich aufrufbar machen (Einzelstimmen bleiben privat).
+grant execute on function public.cap_rating_summary() to anon, authenticated;

@@ -31,12 +31,12 @@ export async function fetchCommunityGroup() {
       .order('brand', { ascending: true });
     if (error || !data || !data.length) return null;
 
-    // Bewertungs-Zusammenfassung laden (best effort – fehlt die View, bleibt es leer).
+    // Bewertungs-Zusammenfassung laden (best effort – fehlt die Funktion, bleibt es leer).
     const sum = {};
     try {
-      const { data: rs } = await c.from('cap_rating_summary').select('template_id,avg_rating,votes');
+      const { data: rs } = await c.rpc('cap_rating_summary');
       if (rs) for (const r of rs) sum[r.template_id] = { avg: +r.avg_rating || 0, votes: +r.votes || 0 };
-    } catch (_) { /* View evtl. noch nicht angelegt */ }
+    } catch (_) { /* Funktion evtl. noch nicht angelegt */ }
 
     const byBrand = new Map();
     for (const r of data) {
@@ -94,8 +94,7 @@ export async function fetchTemplateRating(templateId) {
   if (!c) return null;
   try {
     const { data } = await c
-      .from('cap_rating_summary')
-      .select('avg_rating,votes')
+      .rpc('cap_rating_summary')
       .eq('template_id', templateId)
       .maybeSingle();
     return data ? { avg: +data.avg_rating || 0, votes: +data.votes || 0 } : { avg: 0, votes: 0 };
