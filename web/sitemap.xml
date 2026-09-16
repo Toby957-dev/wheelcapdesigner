@@ -12,6 +12,10 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html"/>
   </url>
   <url>
     <loc>https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html</loc>
@@ -19,5 +23,53 @@
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html"/>
+  </url>
+  <url>
+    <loc>https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html"/>
+  </url>
+  <url>
+    <loc>https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html"/>
+  </url>
+  <url>
+    <loc>https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html"/>
+  </url>
+  <url>
+    <loc>https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html"/>
   </url>
 </urlset>

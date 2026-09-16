@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>センターキャップ ジェネレーター – 3Dで設計＆印刷（無料）| WheelCapDesigner</title>
+  <meta name="description" content="ホイールのセンターキャップを自分で設計して3D印刷：寸法を入力し、ロゴを選び、3Dで確認して STL または 3MF でダウンロード。無料のオンラインジェネレーター、登録不要。" />
+  <meta name="keywords" content="センターキャップ ジェネレーター, ホイールキャップ, センターキャップ 3D印刷, ハブキャップ, center cap, STL, 3MF" />
+  <link rel="canonical" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html" />
+  <link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html" />
+  <link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html" />
+  <link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html" />
+  <link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html" />
+  <link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html" />
+  <link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html" />
+  <link rel="alternate" hreflang="x-default" href="https://wheelcapdesigner-u4aa.vercel.app/" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#0a1526" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="センターキャップ ジェネレーター – 3Dで設計＆印刷" />
+  <meta property="og:description" content="寸法を入力、ロゴを選び、3Dで確認して STL/3MF をダウンロード。無料・登録不要。" />
+  <meta property="og:url" content="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html" />
+  <meta property="og:image" content="https://wheelcapdesigner-u4aa.vercel.app/og-image.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/guide.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"HowTo","name":"センターキャップを設計して3D印刷する",
+   "description":"4ステップで合うセンターキャップを設計し、STL/3MF でダウンロードして3D印刷します。",
+   "totalTime":"PT3M","tool":[{"@type":"HowToTool","name":"WheelCapDesigner（ブラウザ）"}],
+   "step":[
+    {"@type":"HowToStep","name":"寸法を入力","text":"外径と、ホイール開口部の取付/クランプ径を入力します。"},
+    {"@type":"HowToStep","name":"ロゴを選択","text":"内蔵の形状・テキスト、または自分の SVG ロゴを追加して自由に配置します。"},
+    {"@type":"HowToStep","name":"3Dで確認","text":"モデルをリアルタイムに回転させ、フィットとクリップを確認します。"},
+    {"@type":"HowToStep","name":"ダウンロード","text":"STL またはカラーの 3MF（キャップとロゴを分離）でエクスポートして印刷します。"}
+   ]}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"このジェネレーターは無料ですか？","acceptedAnswer":{"@type":"Answer","text":"はい。WheelCapDesigner はブラウザで無料で動作し、登録やインストールは不要です。"}},
+    {"@type":"Question","name":"どの寸法が必要ですか？","acceptedAnswer":{"@type":"Answer","text":"2つ：外径と、ホイール開口部の取付/クランプ径です。ホイールで実測してください。"}},
+    {"@type":"Question","name":"どの形式で入手できますか？","acceptedAnswer":{"@type":"Answer","text":"単色印刷用の STL、またはキャップとロゴが別オブジェクトのカラー 3MF（マルチカラー/AMS に最適）です。"}},
+    {"@type":"Question","name":"印刷したキャップは固定されますか？","acceptedAnswer":{"@type":"Answer","text":"はい、調整可能なスナップクリップにより固定され、公差はプリンターに合わせて調整できます。"}},
+    {"@type":"Question","name":"自分のロゴを使えますか？","acceptedAnswer":{"@type":"Answer","text":"はい。SVG ファイルをアップロードするか、内蔵の形状やテキストを使えます（凸・彫り込み・面一2色）。"}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/"><img src="/wc-mark.png" alt="" /> WheelCapDesigner</a>
+      <a class="btn" href="/?utm_source=guide&utm_medium=header&utm_campaign=ja">エディターを開く</a>
+    </header>
+
+    <main>
+      <h1>センターキャップ ジェネレーター – 3Dで設計＆印刷（無料）</h1>
+      <p class="lede">センターキャップを紛失、色あせ、割れてしまった？<strong>WheelCapDesigner</strong> なら、数分でぴったり合うセンターキャップを設計し、3Dでプレビューして <strong>STL</strong> またはカラーの <strong>3MF</strong> でダウンロードできます——完全無料・登録不要。</p>
+
+      <a class="btn" href="/?utm_source=guide&utm_medium=hero&utm_campaign=ja">センターキャップを設計 →</a>
+
+      <h2>使い方</h2>
+      <ol class="steps">
+        <li><b>寸法を入力。</b> 外径と、ホイール開口部の取付/クランプ径。ヒント：ホイールで実測を——クランプ Ø がフィットを左右します。</li>
+        <li><b>ロゴを選択。</b> 内蔵の形状（星・六角形・リング…）、テキスト、または自分の <strong>SVG</strong>。配置・回転・拡大縮小——凸・彫り込み・面一2色。</li>
+        <li><b>3Dで確認。</b> モデルをリアルタイムに回転し、キャップとロゴの色を設定、クリップとフィットを確認。</li>
+        <li><b>ダウンロードして印刷。</b> <strong>STL</strong>（単色）または、色付きの独立オブジェクトを持つ <strong>3MF</strong>（マルチカラー / AMS に最適）。Bambu Studio、PrusaSlicer などにそのまま。</li>
+      </ol>
+
+      <h2>WheelCapDesigner を選ぶ理由</h2>
+      <ul>
+        <li>無料・ブラウザで動作・インストールもアカウントも不要</li>
+        <li>多くの車種とホイールに対応——ブランド別の寸法ライブラリ（必ず自分で実測を）</li>
+        <li>しっかりした<strong>スナップクリップ</strong>、公差はプリンターに合わせて調整可能</li>
+        <li>SVG で自分のロゴ、3つのスタイル（凸・彫り込み・面一2色）</li>
+        <li><strong>CenterLock</strong> モード（六角ナット）でモータースポーツ風</li>
+        <li>水密メッシュ——スライスも着色もクリーン</li>
+        <li>プロジェクトをローカル保存（.wcd）、多言語対応</li>
+      </ul>
+
+      <h2>よくある質問</h2>
+      <div class="faq">
+        <details><summary>このジェネレーターは本当に無料ですか？</summary><p>はい。WheelCapDesigner はブラウザで無料——登録もインストールも不要です。</p></details>
+        <details><summary>どの寸法が必要ですか？</summary><p>2つ：見える外径と、ホイール開口部の取付/クランプ径です。ホイールで実測を——クランプ Ø がフィットを決めます。</p></details>
+        <details><summary>STL と 3MF、どちらを選ぶ？</summary><p>STL は単色印刷用。3MF はキャップとロゴを別々の着色済みオブジェクトとして含み、マルチカラー/AMS に最適（手作業の塗り分け不要）。</p></details>
+        <details><summary>印刷したキャップは固定されますか？</summary><p>はい、調整可能なスナップクリップで固定。きつすぎ/緩すぎる場合はプリンターに合わせて公差を調整してください。</p></details>
+        <details><summary>自分のロゴを使えますか？</summary><p>もちろん——SVG をアップロードするか、内蔵の形状とテキストを使用。必要なら面一2色（トップダウン印刷）も。</p></details>
+        <details><summary>どの素材が向いていますか？</summary><p>屋外では PLA より ASA または PETG が耐久性に優れます（UV/熱）。濃い色ほど劣化がゆっくりです。</p></details>
+      </div>
+
+      <div class="cta">
+        <h2>準備はいい？センターキャップを設計しよう</h2>
+        <p>無料、数分、ブラウザで完結。</p>
+        <a class="btn" href="/?utm_source=guide&utm_medium=cta&utm_campaign=ja">エディターを開く →</a>
+      </div>
+    </main>
+
+    <footer>
+      <span>© WheelCapDesigner · <a href="/">ホーム</a> · <a href="https://makerworld.com/de/models/3245007-wheelcap-designer" target="_blank" rel="noopener">MakerWorld</a></span>
+      <span class="langs">言語: <a href="/nabendeckel-generator.html">DE</a> <a href="/hub-cap-generator.html">EN</a> <a href="/kolpak-generator.html">PL</a> <a href="/kolpachok-generator.html">RU</a> <a href="/lungugai-generator.html">中文</a></span>
+    </footer>
+  </div>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

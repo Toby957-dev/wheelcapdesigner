@@ -228,7 +228,7 @@ function setFileName(name) {
 }
 
 function findMeta(key) { for (const g of GROUPS) for (const m of g.params) if (m.key === key) return m; return { step: 1 }; }
-function uiLocale() { return ({ de: 'de-DE', en: 'en-GB', fr: 'fr-FR', es: 'es-ES', it: 'it-IT', pl: 'pl-PL', ru: 'ru-RU' })[getLang()] || 'de-DE'; }
+function uiLocale() { return ({ de: 'de-DE', en: 'en-GB', fr: 'fr-FR', es: 'es-ES', it: 'it-IT', pl: 'pl-PL', ru: 'ru-RU', zh: 'zh-CN', ja: 'ja-JP' })[getLang()] || 'de-DE'; }
 
 // ============ Projekt-Sektion ============
 function buildProjectSection(root) {
@@ -844,9 +844,11 @@ function setupI18nStatic() {
   setText('#homeContinue', t('Aktuelles Projekt weiter bearbeiten →'));
   const guide = document.getElementById('homeGuide');
   if (guide) {
-    const de = getLang() === 'de';
-    guide.href = (de ? '/nabendeckel-generator.html' : '/hub-cap-generator.html') + '?utm_source=app&utm_medium=home&utm_campaign=guide';
-    guide.textContent = de ? "So funktioniert's" : 'How it works';
+    const lang = getLang();
+    const pages = { de: '/nabendeckel-generator.html', en: '/hub-cap-generator.html', pl: '/kolpak-generator.html', ru: '/kolpachok-generator.html', zh: '/lungugai-generator.html', ja: '/centercap-generator-ja.html' };
+    const labels = { de: "So funktioniert's", en: 'How it works', fr: 'Comment ça marche', es: 'Cómo funciona', it: 'Come funziona', pl: 'Jak to działa', ru: 'Как это работает', zh: '使用方法', ja: '使い方' };
+    guide.href = (pages[lang] || pages.en) + '?utm_source=app&utm_medium=home&utm_campaign=guide';
+    guide.textContent = labels[lang] || labels.en;
   }
 }
 

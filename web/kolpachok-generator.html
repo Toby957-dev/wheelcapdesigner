@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Генератор колпачков ступицы – создать и напечатать на 3D (бесплатно) | WheelCapDesigner</title>
+  <meta name="description" content="Создайте и напечатайте на 3D-принтере колпачок ступицы: задайте размеры, выберите логотип, посмотрите в 3D и скачайте как STL или 3MF. Бесплатный онлайн-генератор, без регистрации." />
+  <meta name="keywords" content="генератор колпачков, колпачок ступицы, заглушка ступицы, 3D печать колпачка, center cap, STL, 3MF" />
+  <link rel="canonical" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html" />
+  <link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html" />
+  <link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html" />
+  <link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html" />
+  <link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html" />
+  <link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html" />
+  <link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html" />
+  <link rel="alternate" hreflang="x-default" href="https://wheelcapdesigner-u4aa.vercel.app/" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#0a1526" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Генератор колпачков ступицы – создать и напечатать на 3D" />
+  <meta property="og:description" content="Задайте размеры, выберите логотип, посмотрите в 3D и скачайте STL/3MF. Бесплатно, без регистрации." />
+  <meta property="og:url" content="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html" />
+  <meta property="og:image" content="https://wheelcapdesigner-u4aa.vercel.app/og-image.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/guide.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"HowTo","name":"Создать и напечатать колпачок ступицы на 3D",
+   "description":"За четыре шага создайте подходящий колпачок и скачайте его как STL/3MF для 3D-печати.",
+   "totalTime":"PT3M","tool":[{"@type":"HowToTool","name":"WheelCapDesigner (браузер)"}],
+   "step":[
+    {"@type":"HowToStep","name":"Задайте размеры","text":"Укажите внешний диаметр и монтажный/зажимной диаметр отверстия колеса."},
+    {"@type":"HowToStep","name":"Выберите логотип","text":"Добавьте готовую фигуру, текст или свой SVG-логотип и разместите свободно."},
+    {"@type":"HowToStep","name":"Проверьте в 3D","text":"Вращайте модель в реальном времени и проверьте посадку и защёлки."},
+    {"@type":"HowToStep","name":"Скачайте","text":"Экспортируйте как STL или цветной 3MF (колпачок и логотип отдельно) и печатайте."}
+   ]}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"Генератор колпачков бесплатный?","acceptedAnswer":{"@type":"Answer","text":"Да. WheelCapDesigner работает бесплатно в браузере, без регистрации и установки."}},
+    {"@type":"Question","name":"Какие размеры нужны?","acceptedAnswer":{"@type":"Answer","text":"Два: внешний диаметр и монтажный/зажимной диаметр отверстия колеса. Лучше измерить на колесе."}},
+    {"@type":"Question","name":"Какой формат я получу?","acceptedAnswer":{"@type":"Answer","text":"STL для одноцветной печати или цветной 3MF, где колпачок и логотип — отдельные объекты (идеально для multicolor/AMS)."}},
+    {"@type":"Question","name":"Будет ли колпачок держаться в колесе?","acceptedAnswer":{"@type":"Answer","text":"Да, благодаря регулируемым защёлкам, а допуск можно подстроить под ваш принтер."}},
+    {"@type":"Question","name":"Можно ли использовать свой логотип?","acceptedAnswer":{"@type":"Answer","text":"Да. Загрузите файл SVG или используйте встроенные фигуры и текст — выпуклый, гравированный или заподлицо двухцветный."}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/"><img src="/wc-mark.png" alt="" /> WheelCapDesigner</a>
+      <a class="btn" href="/?utm_source=guide&utm_medium=header&utm_campaign=ru">Открыть редактор</a>
+    </header>
+
+    <main>
+      <h1>Генератор колпачков ступицы – создать и напечатать на 3D бесплатно</h1>
+      <p class="lede">Потеряли колпачок, он выцвел или треснул? В <strong>WheelCapDesigner</strong> вы за несколько минут создадите точно подходящий колпачок ступицы, посмотрите его в 3D и скачаете как <strong>STL</strong> или цветной <strong>3MF</strong> для 3D-печати — полностью бесплатно и без регистрации.</p>
+
+      <a class="btn" href="/?utm_source=guide&utm_medium=hero&utm_campaign=ru">Создать колпачок →</a>
+
+      <h2>Как это работает</h2>
+      <ol class="steps">
+        <li><b>Задайте размеры.</b> Внешний диаметр и монтажный/зажимной диаметр отверстия колеса. Совет: измеряйте на колесе — зажимной Ø определяет посадку.</li>
+        <li><b>Выберите логотип.</b> Готовая фигура (звезда, шестиугольник, кольца…), текст или свой <strong>SVG</strong>. Размещайте, вращайте, масштабируйте — выпуклый, гравированный или заподлицо двухцветный.</li>
+        <li><b>Проверьте в 3D.</b> Вращайте модель в реальном времени, задайте цвета колпачка и логотипа, проверьте защёлки и посадку.</li>
+        <li><b>Скачайте и печатайте.</b> Как <strong>STL</strong> (одноцветный) или <strong>3MF</strong> с отдельными цветными объектами (идеально для multicolor / AMS). Готово для Bambu Studio, PrusaSlicer и др.</li>
+      </ol>
+
+      <h2>Почему WheelCapDesigner?</h2>
+      <ul>
+        <li>Бесплатно, в браузере, без установки и аккаунта</li>
+        <li>Подходит для многих авто и дисков — библиотека размеров по маркам (всегда измеряйте свои)</li>
+        <li>Надёжные <strong>защёлки</strong>, допуск настраивается под ваш принтер</li>
+        <li>Свой логотип через SVG, три стиля (выпуклый, гравированный, заподлицо 2-цветный)</li>
+        <li>Режим <strong>CenterLock</strong> (шестигранная гайка) в стиле автоспорта</li>
+        <li>Водонепроницаемые сетки — чистая нарезка и раскраска</li>
+        <li>Локальное сохранение проектов (.wcd), многоязычность</li>
+      </ul>
+
+      <h2>Частые вопросы</h2>
+      <div class="faq">
+        <details><summary>Генератор колпачков действительно бесплатный?</summary><p>Да. WheelCapDesigner работает бесплатно в браузере — без регистрации и установки.</p></details>
+        <details><summary>Какие размеры мне нужны?</summary><p>Два: видимый внешний диаметр и монтажный/зажимной диаметр отверстия колеса. Лучше измерять прямо на колесе — зажимной Ø определяет посадку.</p></details>
+        <details><summary>STL или 3MF — что выбрать?</summary><p>STL для одноцветной печати. 3MF содержит колпачок и логотип как отдельные, уже окрашенные объекты — идеально для multicolor/AMS, без ручной покраски.</p></details>
+        <details><summary>Будет ли напечатанный колпачок держаться?</summary><p>Да, благодаря регулируемым защёлкам. Если слишком туго или слабо — подстройте допуск под ваш принтер.</p></details>
+        <details><summary>Можно ли использовать свой логотип?</summary><p>Конечно — загрузите SVG или используйте встроенные фигуры и текст, при желании двухцветный и заподлицо.</p></details>
+        <details><summary>Какой материал подходит?</summary><p>Снаружи ASA или PETG держатся лучше PLA (УФ/тепло). Тёмные цвета стареют медленнее.</p></details>
+      </div>
+
+      <div class="cta">
+        <h2>Готовы? Создайте свой колпачок</h2>
+        <p>Бесплатно, за пару минут, прямо в браузере.</p>
+        <a class="btn" href="/?utm_source=guide&utm_medium=cta&utm_campaign=ru">Открыть редактор →</a>
+      </div>
+    </main>
+
+    <footer>
+      <span>© WheelCapDesigner · <a href="/">Главная</a> · <a href="https://makerworld.com/de/models/3245007-wheelcap-designer" target="_blank" rel="noopener">MakerWorld</a></span>
+      <span class="langs">Язык: <a href="/nabendeckel-generator.html">DE</a> <a href="/hub-cap-generator.html">EN</a> <a href="/kolpak-generator.html">PL</a> <a href="/lungugai-generator.html">中文</a> <a href="/centercap-generator-ja.html">日本語</a></span>
+    </footer>
+  </div>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>轮毂盖生成器 – 免费在线设计并3D打印 | WheelCapDesigner</title>
+  <meta name="description" content="自己设计并3D打印轮毂盖（中心盖）：输入尺寸、选择徽标、在3D中预览，并下载为 STL 或 3MF。免费在线生成器，无需注册。" />
+  <meta name="keywords" content="轮毂盖生成器, 中心盖, 轮毂盖 3D打印, 轮毂中心盖, center cap, STL, 3MF" />
+  <link rel="canonical" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html" />
+  <link rel="alternate" hreflang="de" href="https://wheelcapdesigner-u4aa.vercel.app/nabendeckel-generator.html" />
+  <link rel="alternate" hreflang="en" href="https://wheelcapdesigner-u4aa.vercel.app/hub-cap-generator.html" />
+  <link rel="alternate" hreflang="pl" href="https://wheelcapdesigner-u4aa.vercel.app/kolpak-generator.html" />
+  <link rel="alternate" hreflang="ru" href="https://wheelcapdesigner-u4aa.vercel.app/kolpachok-generator.html" />
+  <link rel="alternate" hreflang="zh" href="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html" />
+  <link rel="alternate" hreflang="ja" href="https://wheelcapdesigner-u4aa.vercel.app/centercap-generator-ja.html" />
+  <link rel="alternate" hreflang="x-default" href="https://wheelcapdesigner-u4aa.vercel.app/" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <meta name="theme-color" content="#0a1526" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="轮毂盖生成器 – 免费在线设计并3D打印" />
+  <meta property="og:description" content="输入尺寸、选择徽标、在3D中预览并下载 STL/3MF。免费，无需注册。" />
+  <meta property="og:url" content="https://wheelcapdesigner-u4aa.vercel.app/lungugai-generator.html" />
+  <meta property="og:image" content="https://wheelcapdesigner-u4aa.vercel.app/og-image.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/guide.css" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"HowTo","name":"设计并3D打印轮毂盖",
+   "description":"四步设计合适的轮毂盖，并下载为 STL/3MF 用于3D打印。",
+   "totalTime":"PT3M","tool":[{"@type":"HowToTool","name":"WheelCapDesigner（浏览器）"}],
+   "step":[
+    {"@type":"HowToStep","name":"输入尺寸","text":"输入外径以及轮毂开口的安装/夹持直径。"},
+    {"@type":"HowToStep","name":"选择徽标","text":"添加内置形状、文字或上传自己的 SVG 徽标，并自由放置。"},
+    {"@type":"HowToStep","name":"在3D中检查","text":"实时旋转模型，检查装配与卡扣。"},
+    {"@type":"HowToStep","name":"下载","text":"导出为 STL 或带颜色的 3MF（盖子与徽标分开），然后打印。"}
+   ]}
+  </script>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"轮毂盖生成器是免费的吗？","acceptedAnswer":{"@type":"Answer","text":"是的。WheelCapDesigner 在浏览器中免费运行，无需注册和安装。"}},
+    {"@type":"Question","name":"我需要哪些尺寸？","acceptedAnswer":{"@type":"Answer","text":"两个：外径和轮毂开口的安装/夹持直径。最好在轮毂上实测。"}},
+    {"@type":"Question","name":"我会得到哪种格式？","acceptedAnswer":{"@type":"Answer","text":"STL 用于单色打印，或带颜色的 3MF，其中盖子和徽标是独立对象（适合多色/AMS）。"}},
+    {"@type":"Question","name":"打印出来的盖子能固定住吗？","acceptedAnswer":{"@type":"Answer","text":"能，靠可调卡扣，且公差可按你的打印机微调。"}},
+    {"@type":"Question","name":"可以使用自己的徽标吗？","acceptedAnswer":{"@type":"Answer","text":"可以。上传 SVG 文件或使用内置形状和文字——凸起、雕刻或齐平双色。"}}
+  ]}
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/"><img src="/wc-mark.png" alt="" /> WheelCapDesigner</a>
+      <a class="btn" href="/?utm_source=guide&utm_medium=header&utm_campaign=zh">打开设计器</a>
+    </header>
+
+    <main>
+      <h1>轮毂盖生成器 – 免费在线设计并3D打印</h1>
+      <p class="lede">轮毂盖丢失、褪色或开裂了？使用 <strong>WheelCapDesigner</strong>，几分钟即可设计出合适的轮毂盖（中心盖），实时在3D中预览，并下载为 <strong>STL</strong> 或彩色 <strong>3MF</strong> 进行3D打印——完全免费，无需注册。</p>
+
+      <a class="btn" href="/?utm_source=guide&utm_medium=hero&utm_campaign=zh">开始设计轮毂盖 →</a>
+
+      <h2>使用方法</h2>
+      <ol class="steps">
+        <li><b>输入尺寸。</b> 外径和轮毂开口的安装/夹持直径。提示：在轮毂上实测——夹持 Ø 决定装配。</li>
+        <li><b>选择徽标。</b> 内置形状（星形、六边形、圆环…）、文字或你自己的 <strong>SVG</strong>。放置、旋转、缩放——凸起、雕刻或齐平双色。</li>
+        <li><b>在3D中检查。</b> 实时旋转模型，设置盖子与徽标颜色，检查卡扣与装配。</li>
+        <li><b>下载并打印。</b> 导出为 <strong>STL</strong>（单色）或带独立彩色对象的 <strong>3MF</strong>（适合多色 / AMS）。可用于 Bambu Studio、PrusaSlicer 等。</li>
+      </ol>
+
+      <h2>为什么选择 WheelCapDesigner？</h2>
+      <ul>
+        <li>免费、在浏览器中运行、无需安装和账户</li>
+        <li>适配多种车型和轮毂——按品牌的尺寸库（请务必实测自己的）</li>
+        <li>牢固的<strong>卡扣</strong>，公差可按你的打印机调整</li>
+        <li>通过 SVG 使用自定义徽标，三种风格（凸起、雕刻、齐平双色）</li>
+        <li><strong>CenterLock</strong> 模式（六角螺母）赛车风格</li>
+        <li>水密网格——切片和上色都干净利落</li>
+        <li>项目本地保存（.wcd），多语言</li>
+      </ul>
+
+      <h2>常见问题</h2>
+      <div class="faq">
+        <details><summary>轮毂盖生成器真的免费吗？</summary><p>是的。WheelCapDesigner 在浏览器中免费运行——无需注册和安装。</p></details>
+        <details><summary>我需要哪些尺寸？</summary><p>两个：可见外径和轮毂开口的安装/夹持直径。最好直接在轮毂上测量——夹持 Ø 决定装配。</p></details>
+        <details><summary>STL 还是 3MF——选哪个？</summary><p>STL 用于单色打印。3MF 把盖子和徽标作为独立、已上色的对象——适合多色/AMS，无需手动上色。</p></details>
+        <details><summary>打印出来的盖子会固定住吗？</summary><p>会，靠可调卡扣。若太紧或太松，按你的打印机调整公差即可。</p></details>
+        <details><summary>可以使用自己的徽标吗？</summary><p>当然——上传 SVG，或使用内置形状和文字，可选双色齐平（自上而下打印）。</p></details>
+        <details><summary>该用哪种材料？</summary><p>户外使用 ASA 或 PETG 比 PLA 更耐用（抗紫外线/耐热）。深色老化更慢。</p></details>
+      </div>
+
+      <div class="cta">
+        <h2>准备好了吗？设计你的轮毂盖</h2>
+        <p>免费，几分钟，直接在浏览器中完成。</p>
+        <a class="btn" href="/?utm_source=guide&utm_medium=cta&utm_campaign=zh">打开设计器 →</a>
+      </div>
+    </main>
+
+    <footer>
+      <span>© WheelCapDesigner · <a href="/">首页</a> · <a href="https://makerworld.com/de/models/3245007-wheelcap-designer" target="_blank" rel="noopener">MakerWorld</a></span>
+      <span class="langs">语言: <a href="/nabendeckel-generator.html">DE</a> <a href="/hub-cap-generator.html">EN</a> <a href="/kolpak-generator.html">PL</a> <a href="/kolpachok-generator.html">RU</a> <a href="/centercap-generator-ja.html">日本語</a></span>
+    </footer>
+  </div>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
