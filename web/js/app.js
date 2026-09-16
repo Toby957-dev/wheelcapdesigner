@@ -228,7 +228,7 @@ function setFileName(name) {
 }
 
 function findMeta(key) { for (const g of GROUPS) for (const m of g.params) if (m.key === key) return m; return { step: 1 }; }
-function uiLocale() { return ({ de: 'de-DE', en: 'en-GB', fr: 'fr-FR', es: 'es-ES', it: 'it-IT' })[getLang()] || 'de-DE'; }
+function uiLocale() { return ({ de: 'de-DE', en: 'en-GB', fr: 'fr-FR', es: 'es-ES', it: 'it-IT', pl: 'pl-PL', ru: 'ru-RU' })[getLang()] || 'de-DE'; }
 
 // ============ Projekt-Sektion ============
 function buildProjectSection(root) {
