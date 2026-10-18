@@ -25,8 +25,8 @@ face_thickness = 2.0;     // [0.8:0.2:6]
 top_chamfer = 1.0;        // [0:0.2:8]
 
 /* [Profil (CenterLock)] */
-// Deckelprofil: Flach oder CenterLock-Mutter (Sechskant) als Erhöhung
-cap_profile = "flat";       // [flat:Flach, dome:CenterLock (Mutter)]
+// Deckelprofil: Flach, CenterLock-Mutter (Sechskant) oder Kegel
+cap_profile = "flat";       // [flat:Flach, dome:CenterLock (Mutter), cone:Kegel]
 // Anzahl Ecken der Mutter (6 = Sechskant)
 nut_sides = 6;              // [3:1:12]
 // Durchmesser der Mutter (über die Ecken)
@@ -41,6 +41,16 @@ platform_mode = "flush";    // [flush:Bündig (keine extra Fläche), raised:Erh�
 platform_depth = 1.5;       // [0.4:0.1:10]
 // Obere Kanten der Mutter abrunden/fasen (0 = scharf)
 rounding = 0.15;            // [0:0.05:0.6]
+
+/* [Profil (Kegel)] */
+// Dicke der geraden Grundplatte unten (nur bei Kegel)
+cone_base = 2;              // [0:0.5:20]
+// Gesamthöhe des Kegels
+cone_height = 8;            // [2:0.5:40]
+// Durchmesser der oberen Platte
+cone_top_diameter = 30;     // [5:0.5:200]
+// Erhabener Rand oben (0 = kein Rand)
+cone_top_rim = 1.5;         // [0:0.1:8]
 
 /* [Schnappnasen] */
 // Anzahl der Clips
@@ -108,6 +118,8 @@ barb_r    = mount_diameter / 2 + barb_depth;
 skirt_h   = max(1, total_height - face_thickness);
 ledge_z   = max(barb_ramp + 0.2, skirt_h - grip_thickness);
 ramp_z    = max(0.1, ledge_z - barb_ramp);
+// Fase an der Haltenase (Oberseite) – immer da: ~45°, selbsttragend beim Druck + saubere Rast
+barb_fase = min(barb_depth, max(0.1, (ledge_z - ramp_z) * 0.85));
 pitch     = 360 / clip_count;
 clip_w    = min(clip_width_deg, pitch - 2);
 gap_w     = max(1, pitch - clip_w);
@@ -126,18 +138,33 @@ nut_bodyH  = max(0.2, dome_h - round_ch);
 plat_h     = 1.2;
 nut_top_z  = H + dome_h;
 pocket_d   = min(platform_depth, dome_h - 0.4);
-top_z      = !is_nut ? H
-           : platform_mode == "raised"   ? nut_top_z + plat_h
-           : platform_mode == "recessed" ? nut_top_z - pocket_d
-           :                               nut_top_z;
-outline_base_r = is_nut ? plat_r : top_r;
+
+// ---- Kegel (cone) ----
+is_cone    = cap_profile == "cone";
+cone_baseR = max(3, top_r - chamfer);
+cone_H     = max(1, cone_height);
+cone_baseH = max(0, min(cone_base, cone_H - 0.6));
+cone_topR  = max(2, min(cone_top_diameter / 2, cone_baseR - 0.5));
+cone_rim   = max(0, cone_top_rim);
+cone_rimW  = cone_rim > 0.05 ? min(max(1.2, cone_rim), cone_topR * 0.45) : 0;
+cone_platR = cone_topR - cone_rimW;
+cone_topZ  = H + cone_H;
+
+top_z      = is_cone ? cone_topZ
+           : is_nut ? (platform_mode == "raised"   ? nut_top_z + plat_h
+                     : platform_mode == "recessed" ? nut_top_z - pocket_d
+                     :                               nut_top_z)
+           : H;
+outline_base_r = is_cone ? ((cone_rimW > 0 && cone_platR > 1) ? cone_platR : cone_topR)
+               : is_nut  ? plat_r
+               :           top_r;
 surface_z = top_z - (logo_recess_depth > 0 ? logo_recess_depth : 0);
 
 // ---- Bauteile ----
 module skirt_ring() {
   rotate_extrude($fn = fn)
     polygon([
-      [inner_r, 0], [skirt_r, 0], [skirt_r, ramp_z], [barb_r, ledge_z],
+      [inner_r, 0], [skirt_r, 0], [skirt_r, ramp_z], [barb_r, ledge_z - barb_fase],
       [skirt_r, ledge_z], [skirt_r, skirt_h], [inner_r, skirt_h]
     ]);
 }
@@ -168,6 +195,19 @@ module nut_solid() {
     }
 }
 
+// Kegel (Konus): Grundplatte + Kegelmantel + obere Platte + optionaler Rand.
+module cone_solid() {
+  pts = concat(
+    [[0, 0], [cone_baseR, 0]],
+    cone_baseH > 0.05 ? [[cone_baseR, cone_baseH]] : [],
+    [[cone_topR, cone_H]],
+    (cone_rimW > 0 && cone_platR > 1)
+      ? [[cone_topR, cone_H + cone_rim], [cone_platR, cone_H + cone_rim], [cone_platR, cone_H], [0, cone_H]]
+      : [[0, cone_H]]
+  );
+  rotate_extrude($fn = fn) polygon(pts);
+}
+
 module cap_body() {
   union() {
     difference() { skirt_ring(); gaps(); }
@@ -175,6 +215,7 @@ module cap_body() {
     if (is_nut) translate([0, 0, H]) nut_solid();
     if (is_nut && platform_mode == "raised")
       translate([0, 0, nut_top_z]) cylinder(h = plat_h, r = plat_r, $fn = fn);
+    if (is_cone) translate([0, 0, H]) cone_solid();
   }
 }
 

@@ -24,11 +24,14 @@ export function derive(p) {
   const skirtH = Math.max(1, p.totalHeight - p.faceThickness);
   const ledgeZ = Math.max(p.barbRamp + 0.2, skirtH - p.gripThickness);
   const rampZ = Math.max(0.1, ledgeZ - p.barbRamp);
+  // Fase an der Haltenase (Oberseite): immer vorhanden – ~45°, dadurch selbsttragend
+  // beim Druck und eine saubere, geführte Rastkante für besseren Halt.
+  const barbFase = Math.min(p.barbDepth, Math.max(0.1, (ledgeZ - rampZ) * 0.85));
   const pitch = 360 / p.clipCount;
   const clipW = Math.min(p.clipWidthDeg, pitch - 2);
   const gapW = Math.max(1, pitch - clipW);
   const chamfer = Math.min(p.topChamfer, topR - 0.5, p.faceThickness - 0.1);
-  return { topR, skirtR, innerR, barbR, skirtH, ledgeZ, rampZ, pitch, clipW, gapW, chamfer, H: p.totalHeight };
+  return { topR, skirtR, innerR, barbR, skirtH, ledgeZ, rampZ, barbFase, pitch, clipW, gapW, chamfer, H: p.totalHeight };
 }
 
 // ---- Hilfen ----
@@ -103,7 +106,7 @@ export async function buildCap(p, logo) {
     const c = Math.max(0, d.chamfer);
     const prof = [
       [0, d.H], [d.topR - c, d.H], [d.topR, d.H - c], [d.topR, d.skirtH], [d.skirtR, d.skirtH],
-      [d.skirtR, d.ledgeZ], [d.barbR, d.ledgeZ], [d.skirtR, d.rampZ], [d.skirtR, 0],
+      [d.skirtR, d.ledgeZ], [d.barbR, d.ledgeZ - d.barbFase], [d.skirtR, d.rampZ], [d.skirtR, 0],
       [d.innerR, 0], [d.innerR, d.skirtH], [0, d.skirtH],
     ];
     const bodyCS = T(cs(prof));
@@ -160,6 +163,35 @@ export async function buildCap(p, logo) {
         topZ = nutTop;
       }
       outlineBaseR = platR;
+    }
+
+    // 3b) Kegel (Konus) mit Grundplatte, oberer Platte und optionalem Rand
+    if (p.capProfile === 'cone') {
+      const baseR = Math.max(3, d.topR - c);
+      const coneH = Math.max(1, p.coneHeight);
+      const baseH = Math.max(0, Math.min(p.coneBase, coneH - 0.6));
+      const topR2 = Math.max(2, Math.min(p.coneTopDiameter / 2, baseR - 0.5));
+      const rim = Math.max(0, p.coneTopRim || 0);
+      const rimW = rim > 0.05 ? Math.min(Math.max(1.2, rim), topR2 * 0.45) : 0;
+      const platR = topR2 - rimW;
+      const topZc = d.H + coneH;
+
+      const prof2 = [[0, d.H], [baseR, d.H]];
+      if (baseH > 0.05) prof2.push([baseR, d.H + baseH]);     // gerade Grundplatte
+      prof2.push([topR2, topZc]);                              // Kegelmantel -> obere Platte
+      if (rimW > 0 && platR > 1) {
+        prof2.push([topR2, topZc + rim]);                      // Rand außen hoch
+        prof2.push([platR, topZc + rim]);                      // Rand oben nach innen
+        prof2.push([platR, topZc]);                            // auf Plattformniveau
+        prof2.push([0, topZc]);                                // zur Mitte (Logo-Fläche)
+      } else {
+        prof2.push([0, topZc]);
+      }
+      const coneCS = T(cs(prof2));
+      const cone = T(Manifold.revolve(coneCS, seg));
+      body = T(body.add(cone));
+      topZ = topZc;
+      outlineBaseR = (rimW > 0 && platR > 1) ? platR : topR2;
     }
 
     // 4) Logo-Vertiefung (Teller)

@@ -365,6 +365,15 @@ const DICT = {
   'Ring am Deckelrand · 0 = aus': { en: 'Ring at the cap edge · 0 = off', fr: 'Anneau au bord · 0 = désactivé', es: 'Anillo en el borde · 0 = apagado', it: 'Anello sul bordo · 0 = off', pl: 'Pierścień na krawędzi kołpaka · 0 = wył.', ru: 'Кольцо по краю колпачка · 0 = выкл.', zh: '盖边圆环 · 0 = 关闭', ja: 'キャップ縁のリング · 0 = オフ' },
   'Plan: Einlage-Tiefe (1 mm empfohlen)': { en: 'Flush: inlay depth (1 mm recommended)', fr: 'Affleurant : profondeur d’incrustation (1 mm conseillé)', es: 'Enrasado: profundidad del inserto (1 mm)', it: 'A filo: profondità dell’inserto (1 mm)', pl: 'Licowany: głębokość wkładki (zalecane 1 mm)', ru: 'Заподлицо: глубина вставки (реком. 1 мм)', zh: '齐平：嵌件深度（建议 1 mm）', ja: '面一：はめ込み深さ（1 mm 推奨）' },
   'Eingelassener „Teller" unter dem Logo': { en: 'Recessed “plate” under the logo', fr: 'Plateau en creux sous le logo', es: 'Plato hundido bajo el logo', it: 'Piattello incassato sotto il logo', pl: 'Wpuszczany „talerz" pod logo', ru: 'Утопленная «площадка» под логотипом', zh: '徽标下方的内嵌“底盘”', ja: 'ロゴ下の埋め込み「皿」' },
+
+  // ==== Kegel / cone ====
+  'Kegel': { en: 'Cone', fr: 'Cône', es: 'Cono', it: 'Cono', pl: 'Stożek', ru: 'Конус', zh: '圆锥', ja: 'コーン' },
+  'Dicke Grundplatte': { en: 'Base plate thickness', fr: 'Épaisseur de la base', es: 'Grosor de la base', it: 'Spessore base', pl: 'Grubość podstawy', ru: 'Толщина основания', zh: '底板厚度', ja: 'ベース厚' },
+  'Durchmesser obere Platte': { en: 'Top plate diameter', fr: 'Ø plateau supérieur', es: 'Ø placa superior', it: 'Ø piastra superiore', pl: 'Ø górnej płyty', ru: 'Ø верхней площадки', zh: '顶板直径', ja: '上面プレート径' },
+  'Rand oben': { en: 'Top rim', fr: 'Rebord haut', es: 'Reborde superior', it: 'Bordo superiore', pl: 'Rant górny', ru: 'Верхний бортик', zh: '顶部边缘', ja: '上部リム' },
+  'Gerade Basis unten, bevor der Kegel beginnt': { en: 'Straight base before the cone starts', fr: 'Base droite avant le cône', es: 'Base recta antes del cono', it: 'Base dritta prima del cono', pl: 'Prosta podstawa przed stożkiem', ru: 'Прямое основание до начала конуса', zh: '圆锥开始前的直基座', ja: 'コーンが始まる前のまっすぐな基部' },
+  'Gesamthöhe des Kegels': { en: 'Total cone height', fr: 'Hauteur totale du cône', es: 'Altura total del cono', it: 'Altezza totale del cono', pl: 'Całkowita wysokość stożka', ru: 'Полная высота конуса', zh: '圆锥总高', ja: 'コーンの全高' },
+  'Erhabener Rand um die obere Platte (0 = kein Rand)': { en: 'Raised rim around the top plate (0 = none)', fr: 'Rebord en relief autour du plateau (0 = aucun)', es: 'Reborde elevado alrededor de la placa (0 = ninguno)', it: 'Bordo rialzato attorno alla piastra (0 = nessuno)', pl: 'Wypukły rant wokół górnej płyty (0 = brak)', ru: 'Выступающий бортик вокруг верхней площадки (0 = нет)', zh: '顶板周围的凸起边缘（0 = 无）', ja: '上面プレート周囲の凸リム（0 = なし）' },
 };
 
 const VALID = new Set(LANGS.map(l => l.code));

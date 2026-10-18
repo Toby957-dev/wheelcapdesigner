@@ -9,7 +9,7 @@ export const DEFAULTS = {
   faceThickness: 2.0,
   // Rand & Profil
   topChamfer: 1.0,
-  capProfile: 'flat',      // flat | dome (CenterLock-Mutter)
+  capProfile: 'flat',      // flat | dome (CenterLock-Mutter) | cone (Kegel)
   nutSides: 6,
   polygonSize: 44,
   domeHeight: 5,
@@ -17,6 +17,11 @@ export const DEFAULTS = {
   platformMode: 'flush',   // flush | raised | recessed
   platformDepth: 1.5,
   rounding: 0.15,
+  // Kegel (cone)
+  coneBase: 2,
+  coneHeight: 8,
+  coneTopDiameter: 30,
+  coneTopRim: 1.5,
   // Clips
   clipCount: 6,
   clipThickness: 1.6,
@@ -61,6 +66,7 @@ export const GROUPS = [
       { key: 'capProfile', label: 'Profil', type: 'select', options: [
           { value: 'flat', label: 'Flach' },
           { value: 'dome', label: 'CenterLock (Mutter)' },
+          { value: 'cone', label: 'Kegel' },
         ] },
       { key: 'nutSides', label: 'Ecken', min: 3, max: 12, step: 1, unit: '', showIf: p => p.capProfile === 'dome', hint: 'Anzahl Ecken der Mutter (6 = Sechskant)' },
       { key: 'polygonSize', label: 'Polygon-Größe', min: 10, max: 210, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'dome', hint: 'Ø der Mutter (über Ecken)' },
@@ -73,6 +79,10 @@ export const GROUPS = [
         ], hint: 'Lage der Logo-Fläche auf der Mutter' },
       { key: 'platformDepth', label: 'Vertiefung-Tiefe', min: 0.4, max: 10, step: 0.1, unit: 'mm', showIf: p => p.capProfile === 'dome' && p.platformMode === 'recessed' },
       { key: 'rounding', label: 'Abrundung', min: 0, max: 0.6, step: 0.05, unit: '', showIf: p => p.capProfile === 'dome', hint: 'Kanten oben abschrägen (0 = scharf)' },
+      { key: 'coneBase', label: 'Dicke Grundplatte', min: 0, max: 20, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Gerade Basis unten, bevor der Kegel beginnt' },
+      { key: 'coneHeight', label: 'Höhe', min: 2, max: 40, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Gesamthöhe des Kegels' },
+      { key: 'coneTopDiameter', label: 'Durchmesser obere Platte', min: 5, max: 200, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Runde Fläche oben fürs Logo' },
+      { key: 'coneTopRim', label: 'Rand oben', min: 0, max: 8, step: 0.1, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Erhabener Rand um die obere Platte (0 = kein Rand)' },
       { key: 'topChamfer', label: 'Fase oben', min: 0, max: 8, step: 0.2, unit: 'mm', expert: true },
     ],
   },
