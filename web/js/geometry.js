@@ -190,6 +190,27 @@ export async function buildCap(p, logo) {
       const coneCS = T(cs(prof2));
       const cone = T(Manifold.revolve(coneCS, seg));
       body = T(body.add(cone));
+
+      // Hohlraum: Kegel innen aushöhlen (deckt herausstehende Achsverbindungen ab).
+      // Öffnet nach unten durch die Deckplatte in den Innenraum.
+      const wall = Math.max(0, p.coneWall || 0);
+      if (wall > 0.05) {
+        const innerBaseR = Math.min(baseR - wall, d.innerR - 0.6);
+        const innerTopR = topR2 - wall;
+        const ceilZ = topZc - wall;                 // Wandstärke als obere Platte stehen lassen
+        if (innerBaseR > 1 && innerTopR > 0.8 && ceilZ > d.H + baseH + 0.5) {
+          const cav = [
+            [0, d.skirtH - 1],                       // bis in den Innenraum -> unten offen
+            [innerBaseR, d.skirtH - 1],
+            [innerBaseR, d.H + baseH],
+            [innerTopR, ceilZ],
+            [0, ceilZ],
+          ];
+          const cavCS = T(cs(cav));
+          const cavity = T(Manifold.revolve(cavCS, seg));
+          body = T(body.subtract(cavity));
+        }
+      }
       topZ = topZc;
       outlineBaseR = (rimW > 0 && platR > 1) ? platR : topR2;
     }

@@ -51,6 +51,8 @@ cone_height = 8;            // [2:0.5:40]
 cone_top_diameter = 30;     // [5:0.5:200]
 // Erhabener Rand oben (0 = kein Rand)
 cone_top_rim = 1.5;         // [0:0.1:8]
+// Wandstärke der Höhlung (0 = massiv) – deckt herausstehende Achsen ab
+cone_wall = 3;              // [0:0.5:8]
 
 /* [Schnappnasen] */
 // Anzahl der Clips
@@ -149,6 +151,14 @@ cone_rim   = max(0, cone_top_rim);
 cone_rimW  = cone_rim > 0.05 ? min(max(1.2, cone_rim), cone_topR * 0.45) : 0;
 cone_platR = cone_topR - cone_rimW;
 cone_topZ  = H + cone_H;
+// Höhlung (innen) – global; öffnet nach unten in den Innenraum
+cone_wall_w   = max(0, cone_wall);
+cone_inBaseR  = min(cone_baseR - cone_wall_w, inner_r - 0.6);
+cone_inTopR   = cone_topR - cone_wall_w;
+cone_ceilZ    = H + cone_H - cone_wall_w;
+cone_hollow   = is_cone && cone_wall_w > 0.05
+             && cone_inBaseR > 1 && cone_inTopR > 0.8
+             && cone_ceilZ > H + cone_baseH + 0.5;
 
 top_z      = is_cone ? cone_topZ
            : is_nut ? (platform_mode == "raised"   ? nut_top_z + plat_h
@@ -208,6 +218,18 @@ module cone_solid() {
   rotate_extrude($fn = fn) polygon(pts);
 }
 
+// Innen-Höhlung des Kegels (global). Öffnet unten durch die Deckplatte.
+module cone_cavity() {
+  rotate_extrude($fn = fn)
+    polygon([
+      [0, skirt_h - 1],
+      [cone_inBaseR, skirt_h - 1],
+      [cone_inBaseR, H + cone_baseH],
+      [cone_inTopR, cone_ceilZ],
+      [0, cone_ceilZ]
+    ]);
+}
+
 module cap_body() {
   union() {
     difference() { skirt_ring(); gaps(); }
@@ -230,6 +252,8 @@ module body_with_recess() {
     if (logo_mode != "none" && logo_recess_depth > 0)
       translate([0, 0, top_z - logo_recess_depth])
         cylinder(h = logo_recess_depth + 1, r = logo_recess_diameter / 2, $fn = fn);
+    // Kegel innen aushöhlen (deckt herausstehende Achsen ab)
+    if (cone_hollow) cone_cavity();
   }
 }
 
@@ -281,7 +305,7 @@ module second_3d(h, zbase) { translate([0, 0, zbase]) linear_extrude(height = h)
 //  ZUSAMMENBAU  (mehrfarbig via color())
 // ============================================================
 if (logo_mode == "none") {
-  color(cap_color) cap_body();
+  color(cap_color) body_with_recess();
 
 } else if (logo_style == "engraved") {
   color(cap_color) difference() {

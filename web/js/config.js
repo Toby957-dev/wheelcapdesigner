@@ -22,6 +22,7 @@ export const DEFAULTS = {
   coneHeight: 8,
   coneTopDiameter: 30,
   coneTopRim: 1.5,
+  coneWall: 3,             // 0 = massiv, sonst Wandstärke des hohlen Kegels
   // Clips
   clipCount: 6,
   clipThickness: 1.6,
@@ -83,6 +84,7 @@ export const GROUPS = [
       { key: 'coneHeight', label: 'Höhe', min: 2, max: 40, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Gesamthöhe des Kegels' },
       { key: 'coneTopDiameter', label: 'Durchmesser obere Platte', min: 5, max: 200, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Runde Fläche oben fürs Logo' },
       { key: 'coneTopRim', label: 'Rand oben', min: 0, max: 8, step: 0.1, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Erhabener Rand um die obere Platte (0 = kein Rand)' },
+      { key: 'coneWall', label: 'Wandstärke (hohl)', min: 0, max: 8, step: 0.5, unit: 'mm', showIf: p => p.capProfile === 'cone', hint: 'Höhlt den Kegel aus (deckt herausstehende Achsen ab) · 0 = massiv' },
       { key: 'topChamfer', label: 'Fase oben', min: 0, max: 8, step: 0.2, unit: 'mm', expert: true },
     ],
   },
